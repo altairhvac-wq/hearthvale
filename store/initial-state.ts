@@ -12,6 +12,7 @@ import {
   createInitialVisitSessionsState,
 } from "@/game/valley";
 import { REGION_IDS } from "@/game/constants/regions";
+import { mergeAnimalsState, mergeAnimalSpeciesState } from "@/game/animals/state";
 import { mergeQuestsState } from "@/game/quests/state";
 import { mergeRestorationState, syncRegionsWithRestorationState } from "@/game/restoration/state";
 import {
@@ -54,6 +55,7 @@ function applyValleyGameplayToState(
   | "regions"
   | "quests"
   | "animals"
+  | "animalSpecies"
   | "restoration"
   | "events"
   | "minigames"
@@ -64,6 +66,7 @@ function applyValleyGameplayToState(
     regions: gameplay.regions,
     quests: gameplay.quests,
     animals: gameplay.animals,
+    animalSpecies: gameplay.animalSpecies,
     restoration: gameplay.restoration,
     events: gameplay.events,
     minigames: gameplay.minigames,
@@ -93,6 +96,7 @@ function mergeValleySaveData(
   const regions = mergeKeyedRecord(defaults.regions, saved.regions);
   const activeRegionId = normalizeActiveRegionId(saved.activeRegionId, regions);
   const restoration = mergeRestorationState(saved.restoration);
+  const animals = mergeAnimalsState(saved.animals);
 
   return {
     ...defaults,
@@ -100,7 +104,8 @@ function mergeValleySaveData(
     activeRegionId,
     regions: syncRegionsWithRestorationState(regions, restoration),
     quests: mergeQuestsState(saved.quests),
-    animals: mergeKeyedRecord(defaults.animals, saved.animals),
+    animals,
+    animalSpecies: mergeAnimalSpeciesState(saved.animalSpecies, animals),
     restoration,
     events: mergeKeyedRecord(defaults.events, saved.events),
     minigames: mergeKeyedRecord(defaults.minigames, saved.minigames),
@@ -160,6 +165,7 @@ export function buildStateForValleySwitch(
   | "regions"
   | "quests"
   | "animals"
+  | "animalSpecies"
   | "restoration"
   | "events"
   | "minigames"
@@ -267,13 +273,15 @@ export function createValleySaveFromLegacyFlatSave(data: {
     data.player.activeRegionId ?? defaults.activeRegionId,
     regions,
   );
+  const animals = mergeAnimalsState(data.animals);
 
   return {
     ...defaults,
     activeRegionId,
     regions,
     quests: mergeQuestsState(data.quests),
-    animals: mergeKeyedRecord(defaults.animals, data.animals),
+    animals,
+    animalSpecies: mergeAnimalSpeciesState(undefined, animals),
     restoration: mergeRestorationState(data.restoration),
     events: mergeKeyedRecord(defaults.events, data.events),
     minigames: mergeKeyedRecord(defaults.minigames, data.minigames),

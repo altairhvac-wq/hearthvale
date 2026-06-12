@@ -12,6 +12,7 @@ import type {
 } from "@/types";
 import type { UnlockReference } from "@/types";
 import type { GameStore } from "../game-store";
+import { applyAnimalSpeciesUnlock } from "./animals";
 
 type SetState = (
   partial:
@@ -71,7 +72,7 @@ export function createStoreUnlockApplicator(
     },
 
     unlockAnimal(speciesId: AnimalSpeciesId) {
-      void speciesId;
+      applyAnimalSpeciesUnlock(set, speciesId);
     },
   });
 }

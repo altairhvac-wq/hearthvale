@@ -30,6 +30,7 @@ export function GameProvider({ children }: GameProviderProps) {
     state.refreshQuestAvailability();
     state.syncActiveQuestObjectives();
     state.refreshRestorationAvailability();
+    state.refreshAnimalAvailability();
 
     persist();
 

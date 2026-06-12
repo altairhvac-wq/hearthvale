@@ -1,5 +1,6 @@
 import { RESOURCE_DEFINITIONS } from "@/game/constants/resources";
 import { QUEST_DEFINITIONS } from "@/game/constants/quests";
+import { getAnimalDefinition } from "@/game/animals/definitions";
 import { getRegionDefinitionName } from "@/game/regions/state";
 import { tryGetSkillDefinition } from "@/game/skills";
 import type { GameReward, ItemId, ResourceId, SkillId } from "@/types";
@@ -43,8 +44,12 @@ export function describeGameReward(reward: GameReward): string {
 
 function describeUnlockReward(unlock: UnlockReference): string {
   switch (unlock.kind) {
-    case "animal":
-      return "Unlock animal companion";
+    case "animal": {
+      const definition = getAnimalDefinition(unlock.speciesId);
+      return definition
+        ? `Unlock ${definition.defaultName} the ${definition.speciesLabel}`
+        : "Unlock animal companion";
+    }
     case "region": {
       const name = getRegionDefinitionName(unlock.regionId);
       return `Unlock ${name}`;

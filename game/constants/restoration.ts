@@ -1,4 +1,5 @@
 import { createId, type RestorationProjectDefinition, type RestorationProjectId } from "@/types";
+import { ANIMAL_SPECIES } from "@/game/animals/definitions";
 import { QUEST_IDS } from "./quests";
 import { REGION_IDS } from "./regions";
 import { RESOURCE_IDS } from "./resources";
@@ -81,6 +82,10 @@ export const RESTORATION_DEFINITIONS = [
       {
         type: "unlock",
         unlock: { kind: "region", regionId: REGION_IDS.SANCTUARY },
+      },
+      {
+        type: "unlock",
+        unlock: { kind: "animal", speciesId: ANIMAL_SPECIES.RABBIT },
       },
     ],
   },

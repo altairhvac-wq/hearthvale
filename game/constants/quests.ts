@@ -1,12 +1,14 @@
 import { createId, type QuestDefinition, type QuestId } from "@/types";
 import { REGION_IDS } from "./regions";
 import { RESOURCE_IDS } from "./resources";
+import { SKILL_IDS } from "./skills";
 
 export const QUEST_IDS = {
   WELCOME_TO_HEARTHVALE: createId<"QuestId">("welcome_to_hearthvale"),
   MEET_THE_VALLEY: createId<"QuestId">("meet_the_valley"),
   RESTORE_THE_SANCTUARY: createId<"QuestId">("restore_the_sanctuary"),
   GATHER_SUPPLIES: createId<"QuestId">("gather_supplies"),
+  COZY_COMPANIONS: createId<"QuestId">("cozy_companions"),
 } as const;
 
 export type CoreQuestId = (typeof QUEST_IDS)[keyof typeof QUEST_IDS];
@@ -124,6 +126,46 @@ export const QUEST_DEFINITIONS = [
     ],
     rewards: [
       { type: "resource", resourceId: RESOURCE_IDS.VALLEY_CHARM, amount: 1 },
+    ],
+  },
+  {
+    id: QUEST_IDS.COZY_COMPANIONS,
+    title: "Cozy Companions",
+    description:
+      "Rescue a gentle soul, share a treat, and earn a moment of trust.",
+    category: "friendship",
+    visibility: "visible",
+    regionId: REGION_IDS.SANCTUARY,
+    requiredRestorationLevel: 1,
+    prerequisiteQuestIds: [QUEST_IDS.MEET_THE_VALLEY],
+    sortOrder: 4,
+    objectives: [
+      {
+        id: "rescue_companion",
+        kind: "manual",
+        description: "Rescue your first sanctuary companion",
+        target: 1,
+      },
+      {
+        id: "feed_companion",
+        kind: "manual",
+        description: "Share a favorite treat",
+        target: 1,
+      },
+      {
+        id: "bond_companion",
+        kind: "manual",
+        description: "Spend a quiet bonding moment together",
+        target: 1,
+      },
+    ],
+    rewards: [
+      { type: "resource", resourceId: RESOURCE_IDS.HEARTS, amount: 25 },
+      {
+        type: "skill_xp",
+        skillId: SKILL_IDS.ANIMAL_CARE,
+        amount: 50,
+      },
     ],
   },
 ] as const satisfies ReadonlyArray<QuestDefinition>;

@@ -1,4 +1,4 @@
-import { createInitialAnimalsState } from "@/game/animals";
+import { createInitialAnimalsState, createInitialAnimalSpeciesState } from "@/game/animals";
 import { DEFAULT_USER_ID, DEFAULT_VALLEY_ID, DEFAULT_VALLEY_NAME } from "@/game/constants/valley";
 import { createInitialDecorationsState } from "@/game/decorations";
 import { createInitialEventsState } from "@/game/events";
@@ -36,6 +36,7 @@ export function createInitialValleyGameplayState(): ValleyGameplayState {
     regions: createInitialRegionsState(),
     quests: createInitialQuestsState(),
     animals: createInitialAnimalsState(),
+    animalSpecies: createInitialAnimalSpeciesState(),
     restoration: createInitialRestorationState(),
     events: createInitialEventsState(),
     minigames: createInitialMiniGamesState(),

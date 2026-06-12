@@ -17,9 +17,10 @@ import { syncActiveValleyIntoValleys } from "./valley-state";
 import { createSkillsSlice, type SkillsSlice } from "./slices/skills";
 import { createRegionsSlice, type RegionsSlice } from "./slices/regions";
 import { createQuestsSlice, type QuestsSlice } from "./slices/quests";
+import { createAnimalsSlice, type AnimalsSlice } from "./slices/animals";
 import { createRestorationSlice, type RestorationSlice } from "./slices/restoration";
 
-export interface GameStore extends GameState, SkillsSlice, RegionsSlice, QuestsSlice, RestorationSlice {
+export interface GameStore extends GameState, SkillsSlice, RegionsSlice, QuestsSlice, RestorationSlice, AnimalsSlice {
   hydrate: () => void;
   persist: () => boolean;
   resetGame: () => void;
@@ -67,6 +68,7 @@ export const useGameStore = create<GameStore>()(
     ...createRegionsSlice(set, get),
     ...createQuestsSlice(set, get),
     ...createRestorationSlice(set, get),
+    ...createAnimalsSlice(set, get),
 
     hydrate() {
       const saved = loadGameSave();

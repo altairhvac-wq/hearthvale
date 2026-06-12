@@ -1,5 +1,7 @@
 import type {
   Animal,
+  AnimalSpeciesId,
+  AnimalSpeciesProgress,
   Decoration,
   Event,
   GameUser,
@@ -35,6 +37,7 @@ export interface GameState {
   regions: Record<string, Region>;
   quests: Record<string, Quest>;
   animals: Record<string, Animal>;
+  animalSpecies: Record<AnimalSpeciesId, AnimalSpeciesProgress>;
   restoration: Record<string, RestorationProject>;
   events: Record<string, Event>;
   minigames: Record<string, MiniGame>;
