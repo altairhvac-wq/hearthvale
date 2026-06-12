@@ -28,8 +28,23 @@ export function mergePlayer(defaults: Player, saved: Player | undefined): Player
   return {
     ...defaults,
     ...saved,
+    userId: saved.userId ?? defaults.userId,
     resources: mergePlayerResources(defaults.resources, saved.resources),
     preferences: mergePlayerPreferences(defaults.preferences, saved.preferences),
+  };
+}
+
+export function mergePlainRecord<T>(
+  defaults: Record<string, T>,
+  saved: Record<string, T> | undefined,
+): Record<string, T> {
+  if (!saved) {
+    return defaults;
+  }
+
+  return {
+    ...defaults,
+    ...saved,
   };
 }
 

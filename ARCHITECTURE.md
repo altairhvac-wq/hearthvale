@@ -46,6 +46,7 @@ game/                 Pure domain logic — no React, no Zustand
   constants/          Static IDs, definitions, catalogs
   skills/             XP curve, progression, centralized XP service
   player/             Player defaults and helpers
+  valley/             Valley defaults, roles, permissions
   regions/            Region state factories
   animals/            Animal definitions
   quests/             Quest state factories
@@ -98,16 +99,31 @@ sequenceDiagram
 
 The global `useGameStore` holds:
 
-- **player** — identity, resources, preferences, active region
+**Account layer**
+
+- **user** — local account stub (`GameUser`)
+- **player** — resources, preferences, linked to `user` via `userId`
 - **skills** — `Record<SkillId, SkillProgress>` (total XP is source of truth)
 - **inventory** — collected items
-- **regions** — unlock / discovery / restoration progress per region (source of truth for region unlocks)
+
+**Active valley layer** (mirrors `valleys[activeValleyId]` on save)
+
+- **valley** — active valley metadata (name, owner)
+- **activeValleyId** — which valley is loaded
+- **activeRegionId** — current region within the active valley
+- **regions** — unlock / discovery / restoration progress per region
 - **quests** — quest status and objectives
 - **animals** — owned animals and bond state
 - **restoration** — active restoration projects
 - **events** — runtime event state (empty until event systems ship)
 - **minigames** — per-game progress (empty until mini-games ship)
 - **decorations** — placed decor state (empty until decor systems ship)
+
+**Social scaffolding** (persisted, no UI yet)
+
+- **memberships** — valley roles for future shared valleys
+- **pendingInvites** — async invite records
+- **visitSessions** — visit windows with permission grants
 
 Derived values (skill level, XP to next level, unlock lists) are **computed on read**, not stored.
 
@@ -160,11 +176,115 @@ getSkillLevelInfo(skillId)    // Full progress snapshot for UI
 | Validation | `store/save-validation.ts` — rejects corrupt/unsupported saves |
 | Restore merge | `store/merge-state.ts` — deep-merge player resources/preferences |
 | Persistable keys | `store/persistable-state.ts` — single list of saved slices |
-| Migrations | `store/migrations.ts` — chain `SaveMigration` records (v1 → v2 adds events/minigames/decorations) |
+| Migrations | `store/migrations.ts` — chain `SaveMigration` records (v1 → v2 → v3 wraps flat save into valley-scoped v3) |
 
 Save payload mirrors store slices plus `version` and `savedAt`. When bumping `SAVE_VERSION`, add a migration and merge new defaults in `fromSaveData()`.
 
 Future Supabase sync can reuse `GameSaveData` as the wire format — swap the persistence adapter without touching domain code.
+
+---
+
+## Multiplayer Philosophy
+
+Hearthvale multiplayer is **cozy, safe, and asynchronous-first**. Players should be able to invite friends, visit each other's valleys, help with small tasks, and send gifts — without requiring real-time co-presence or competitive pressure.
+
+| Principle | What it means in practice |
+|-----------|---------------------------|
+| Async-first | Visits, gifts, and help arrive as gentle notifications — not live sessions |
+| Permission-gated | Every action checks `ValleyPermission` derived from role + overrides |
+| Valley-scoped progress | Regions, quests, animals, restoration, and decor belong to a **valley**, not a global blob |
+| Local-first V1 | Single-player flow stays on device; cloud sync is an adapter swap later |
+| No fake auth | `GameUser` is a local stub until real accounts ship |
+
+### Domain Models (`types/user.ts`, `types/valley.ts`)
+
+| Model | Purpose |
+|-------|---------|
+| `GameUser` | Account identity (local stub today, cloud-backed later) |
+| `Player` | Gameplay profile — resources, preferences, linked via `userId` |
+| `Valley` | Named container with an owner |
+| `ValleyMember` | Role + optional permission overrides for shared valleys |
+| `ValleyRole` | `owner` · `member` · `visitor` |
+| `ValleyPermission` | `view_valley` · `collect_gifts` · `help_tasks` · `decorate` · `manage_invites` · `manage_valley` |
+| `ValleyInvite` | Async invite record (pending/accepted/declined/expired/revoked) |
+| `VisitSession` | A cozy visit window with explicit permission grants |
+
+Role defaults live in `game/valley/permissions.ts`. Use `getEffectivePermissions()` and `hasValleyPermission()` — never hard-code role checks in UI.
+
+### Valley-Scoped State
+
+Runtime state splits into three layers:
+
+```mermaid
+flowchart TB
+  subgraph account [Account layer]
+    User[GameUser]
+    Player[Player profile]
+    Skills[Skills]
+    Inventory[Inventory]
+  end
+
+  subgraph valley [Active valley layer]
+    ValleyMeta[Valley metadata]
+    Regions[Regions]
+    Quests[Quests]
+    Animals[Animals]
+    Restoration[Restoration]
+    ActiveRegion[activeRegionId]
+  end
+
+  subgraph social [Social scaffolding — empty in V1]
+    Memberships[memberships]
+    Invites[pendingInvites]
+    Visits[visitSessions]
+  end
+
+  account --> valley
+  valley --> social
+```
+
+**Player-global (follows the account):** `user`, `player`, `skills`, `inventory`
+
+**Valley-local (per valley, denormalized at store root for the active valley):** `activeRegionId`, `regions`, `quests`, `animals`, `restoration`, `events`, `minigames`, `decorations`
+
+**Social scaffolding (persisted, unused in V1 UI):** `memberships`, `pendingInvites`, `visitSessions`
+
+The Valley Map reads the same flat keys as before (`activeRegionId`, `regions`, …). `store/valley-state.ts` provides selectors (`pickActiveValleyGameplay`, `selectActiveRegionId`) for future valley-switching without rewriting features.
+
+### Save Format v3
+
+```typescript
+{
+  version: 3,
+  user, player, skills, inventory,     // account layer
+  activeValleyId,
+  valleys: { [valleyId]: ValleySaveData },  // per-valley gameplay blobs
+  memberships, pendingInvites, visitSessions // social scaffolding
+}
+```
+
+v2 flat saves migrate automatically: gameplay wraps into `valleys.valley_home`, `player.activeRegionId` moves to valley scope, and a local `GameUser` is seeded from the legacy player record.
+
+### Future Supabase Tables (conceptual)
+
+| Table | Maps to |
+|-------|---------|
+| `users` | `GameUser` + auth provider IDs |
+| `players` | `Player` profile row per user |
+| `valleys` | `Valley` metadata |
+| `valley_saves` | `ValleySaveData` JSON blob or normalized columns |
+| `valley_members` | `ValleyMember` |
+| `valley_invites` | `ValleyInvite` |
+| `visit_sessions` | `VisitSession` |
+
+Sync strategy: push/pull **valley blobs** independently from account progress. Conflict resolution stays per-valley — not global save overwrite.
+
+### Why V1 Remains Local-First
+
+- No auth or network dependency for the core loop
+- Valley Map and persistence keep working offline
+- Social records exist as typed empty scaffolding — ready for Supabase without rewiring the store
+- Real-time features (live co-presence, sockets) are explicitly out of scope until async visits feel great
 
 ---
 
@@ -219,7 +339,7 @@ Planned major systems — architecture is ready, implementation is not:
 | **Observatory** | Discovery events, Exploration milestones |
 | **Air Balloon** | Travel unlock, seasonal island access |
 | **Seasonal Events** | `game/events`, limited quests & decor |
-| **Multiplayer / Cloud** | Supabase adapter replacing localStorage |
+| **Multiplayer / Cloud** | Supabase adapter; valley blob sync; `GameUser` auth |
 
 ---
 

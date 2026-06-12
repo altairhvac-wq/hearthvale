@@ -8,13 +8,22 @@ import type { Region } from "./region";
 import type { RestorationProject } from "./restoration";
 import type { SkillProgress } from "./skill";
 import type { Player } from "./player";
+import type { GameUser } from "./user";
+import type { ValleyId } from "./ids";
+import type {
+  ValleyInvite,
+  ValleyMember,
+  ValleySaveData,
+  VisitSession,
+} from "./valley";
 
-export const SAVE_VERSION = 2 as const;
+export const SAVE_VERSION = 3 as const;
 
-export interface GameSaveData {
-  version: typeof SAVE_VERSION;
+/** @deprecated v2 flat shape — migrated automatically to v3. */
+export interface LegacyGameSaveDataV2 {
+  version: 2;
   savedAt: string;
-  player: Player;
+  player: Player & { activeRegionId?: string | null };
   skills: Record<string, SkillProgress>;
   inventory: InventoryItem[];
   regions: Record<string, Region>;
@@ -24,6 +33,20 @@ export interface GameSaveData {
   events: Record<string, Event>;
   minigames: Record<string, MiniGame>;
   decorations: Record<string, Decoration>;
+}
+
+export interface GameSaveData {
+  version: typeof SAVE_VERSION;
+  savedAt: string;
+  user: GameUser;
+  player: Player;
+  skills: Record<string, SkillProgress>;
+  inventory: InventoryItem[];
+  activeValleyId: ValleyId;
+  valleys: Record<string, ValleySaveData>;
+  memberships: Record<string, ValleyMember>;
+  pendingInvites: Record<string, ValleyInvite>;
+  visitSessions: Record<string, VisitSession>;
 }
 
 export interface SaveMigration {

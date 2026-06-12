@@ -1,9 +1,11 @@
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
+import type { ValleyId } from "@/types";
 import {
   createInitialGameState,
   fromSaveData,
   toSaveData,
+  buildStateForValleySwitch,
   type GameState,
 } from "./initial-state";
 import { loadGameSave, saveGameSave } from "./persistence";
@@ -11,6 +13,7 @@ import {
   hasPersistableStateChanged,
   resetPersistableSnapshot,
 } from "./persistable-state";
+import { syncActiveValleyIntoValleys } from "./valley-state";
 import { createSkillsSlice, type SkillsSlice } from "./slices/skills";
 import { createRegionsSlice, type RegionsSlice } from "./slices/regions";
 
@@ -19,6 +22,7 @@ export interface GameStore extends GameState, SkillsSlice, RegionsSlice {
   persist: () => boolean;
   resetGame: () => void;
   touchLastPlayed: () => void;
+  switchActiveValley: (valleyId: ValleyId) => boolean;
 }
 
 let persistTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -81,6 +85,10 @@ export const useGameStore = create<GameStore>()(
 
     persist() {
       set({ isSaving: true, saveError: null });
+
+      const syncedValleys = syncActiveValleyIntoValleys(get());
+      set({ valleys: syncedValleys });
+
       const saveData = toSaveData(get());
       const success = saveGameSave(saveData);
 
@@ -111,12 +119,29 @@ export const useGameStore = create<GameStore>()(
     },
 
     touchLastPlayed() {
+      const now = new Date().toISOString();
+
       set((state) => ({
+        user: {
+          ...state.user,
+          lastSeenAt: now,
+        },
         player: {
           ...state.player,
-          lastPlayedAt: new Date().toISOString(),
+          lastPlayedAt: now,
         },
       }));
+    },
+
+    switchActiveValley(valleyId) {
+      const nextState = buildStateForValleySwitch(get(), valleyId);
+
+      if (!nextState) {
+        return false;
+      }
+
+      set(nextState);
+      return true;
     },
   })),
 );

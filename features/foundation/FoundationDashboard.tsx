@@ -8,6 +8,7 @@ import { useGameStore, useIsGameHydrated } from "@/store";
 export function FoundationDashboard() {
   const isHydrated = useIsGameHydrated();
   const player = useGameStore((state) => state.player);
+  const activeRegionId = useGameStore((state) => state.activeRegionId);
   const regions = useGameStore((state) => state.regions);
   const quests = useGameStore((state) => state.quests);
   const animals = useGameStore((state) => state.animals);
@@ -40,7 +41,7 @@ export function FoundationDashboard() {
       <section className="space-y-1 rounded border border-stone-200 bg-white/90 p-3">
         <p>hydrated: true</p>
         <p>player: {player.displayName}</p>
-        <p>region: {getRegionDisplayName(player.activeRegionId, regions)}</p>
+        <p>region: {getRegionDisplayName(activeRegionId, regions)}</p>
         <p>skills: {skillCount} registered</p>
         <p>
           restoration lv:{" "}

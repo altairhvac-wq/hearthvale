@@ -1,96 +1,199 @@
-import { createInitialAnimalsState } from "@/game/animals";
-import { createInitialDecorationsState } from "@/game/decorations";
-import { createInitialEventsState } from "@/game/events";
+import { DEFAULT_VALLEY_ID } from "@/game/constants/valley";
 import { createInitialInventoryState } from "@/game/inventory";
-import { createInitialMiniGamesState } from "@/game/minigames";
 import { createDefaultPlayer } from "@/game/player";
-import { createInitialQuestsState } from "@/game/quests";
-import { createInitialRegionsState } from "@/game/regions";
-import { createInitialRestorationState } from "@/game/restoration";
 import { normalizeSkillsState } from "@/game/skills";
+import {
+  createDefaultGameUser,
+  createDefaultValley,
+  createDefaultValleySaveData,
+  createInitialInvitesState,
+  createInitialMembershipsState,
+  createInitialValleyGameplayState,
+  createInitialVisitSessionsState,
+} from "@/game/valley";
 import { REGION_IDS } from "@/game/constants/regions";
-import { mergeKeyedRecord, mergePlayer } from "./merge-state";
+import { mergeKeyedRecord, mergePlainRecord, mergePlayer } from "./merge-state";
+import {
+  extractValleyGameplay,
+  extractValleyMetadata,
+  pickActiveValleyGameplay,
+  syncActiveValleyIntoValleys,
+} from "./valley-state";
+import type { GameState } from "./game-state";
 import type {
   Animal,
   Decoration,
   Event,
   GameSaveData,
+  GameUser,
   InventoryItem,
   MiniGame,
   Player,
   Quest,
   Region,
+  RegionId,
   RestorationProject,
-  SkillProgress,
+  ValleyId,
+  ValleySaveData,
 } from "@/types";
 import { SAVE_VERSION } from "@/types";
 
-export interface GameState {
-  player: Player;
-  skills: Record<string, SkillProgress>;
-  inventory: InventoryItem[];
-  regions: Record<string, Region>;
-  quests: Record<string, Quest>;
-  animals: Record<string, Animal>;
-  restoration: Record<string, RestorationProject>;
-  events: Record<string, Event>;
-  minigames: Record<string, MiniGame>;
-  decorations: Record<string, Decoration>;
-  isHydrated: boolean;
-  isSaving: boolean;
-  lastSavedAt: string | null;
-  saveError: string | null;
+export type { GameState } from "./game-state";
+
+function applyValleyGameplayToState(
+  gameplay: ReturnType<typeof pickActiveValleyGameplay>,
+): Pick<
+  GameState,
+  | "activeRegionId"
+  | "regions"
+  | "quests"
+  | "animals"
+  | "restoration"
+  | "events"
+  | "minigames"
+  | "decorations"
+> {
+  return {
+    activeRegionId: gameplay.activeRegionId,
+    regions: gameplay.regions,
+    quests: gameplay.quests,
+    animals: gameplay.animals,
+    restoration: gameplay.restoration,
+    events: gameplay.events,
+    minigames: gameplay.minigames,
+    decorations: gameplay.decorations,
+  };
+}
+
+function normalizeActiveRegionId(
+  activeRegionId: RegionId | null,
+  regions: Record<string, Region>,
+): RegionId | null {
+  if (!activeRegionId || !regions[activeRegionId]) {
+    return REGION_IDS.VALLEY;
+  }
+
+  return activeRegionId;
+}
+
+function mergeValleySaveData(
+  defaults: ValleySaveData,
+  saved: ValleySaveData | undefined,
+): ValleySaveData {
+  if (!saved) {
+    return defaults;
+  }
+
+  const regions = mergeKeyedRecord(defaults.regions, saved.regions);
+  const activeRegionId = normalizeActiveRegionId(saved.activeRegionId, regions);
+
+  return {
+    ...defaults,
+    ...saved,
+    activeRegionId,
+    regions,
+    quests: mergeKeyedRecord(defaults.quests, saved.quests),
+    animals: mergeKeyedRecord(defaults.animals, saved.animals),
+    restoration: mergeKeyedRecord(defaults.restoration, saved.restoration),
+    events: mergeKeyedRecord(defaults.events, saved.events),
+    minigames: mergeKeyedRecord(defaults.minigames, saved.minigames),
+    decorations: mergeKeyedRecord(defaults.decorations, saved.decorations),
+  };
+}
+
+function mergeAllValleySaveData(
+  savedValleys: Record<string, ValleySaveData> | undefined,
+): Record<string, ValleySaveData> {
+  const defaults = createDefaultValleySaveData();
+  const merged: Record<string, ValleySaveData> = {};
+
+  for (const [valleyId, savedValley] of Object.entries(savedValleys ?? {})) {
+    merged[valleyId] = mergeValleySaveData(defaults, savedValley);
+  }
+
+  return merged;
 }
 
 export function createInitialGameState(): Omit<
   GameState,
   "isHydrated" | "isSaving" | "lastSavedAt" | "saveError"
 > {
+  const user = createDefaultGameUser();
+  const player = createDefaultPlayer();
+  const valley = createDefaultValley();
+  const valleyGameplay = createInitialValleyGameplayState();
+  const defaultValleySave = createDefaultValleySaveData();
+
   return {
-    player: createDefaultPlayer(),
+    user,
+    player,
+    activeValleyId: DEFAULT_VALLEY_ID,
+    valleys: {
+      [DEFAULT_VALLEY_ID]: defaultValleySave,
+    },
+    valley,
+    memberships: createInitialMembershipsState(),
+    pendingInvites: createInitialInvitesState(),
+    visitSessions: createInitialVisitSessionsState(),
     skills: normalizeSkillsState(undefined),
     inventory: createInitialInventoryState(),
-    regions: createInitialRegionsState(),
-    quests: createInitialQuestsState(),
-    animals: createInitialAnimalsState(),
-    restoration: createInitialRestorationState(),
-    events: createInitialEventsState(),
-    minigames: createInitialMiniGamesState(),
-    decorations: createInitialDecorationsState(),
+    ...applyValleyGameplayToState(valleyGameplay),
+  };
+}
+
+export function buildStateForValleySwitch(
+  state: GameState,
+  valleyId: ValleyId,
+): Pick<
+  GameState,
+  | "activeValleyId"
+  | "valleys"
+  | "valley"
+  | "activeRegionId"
+  | "regions"
+  | "quests"
+  | "animals"
+  | "restoration"
+  | "events"
+  | "minigames"
+  | "decorations"
+> | null {
+  const valleys = syncActiveValleyIntoValleys(state);
+  const savedValley = valleys[valleyId];
+
+  if (!savedValley) {
+    return null;
+  }
+
+  const mergedValleySave = mergeValleySaveData(
+    createDefaultValleySaveData(),
+    savedValley,
+  );
+
+  return {
+    activeValleyId: valleyId,
+    valleys,
+    valley: extractValleyMetadata(mergedValleySave),
+    ...applyValleyGameplayToState(extractValleyGameplay(mergedValleySave)),
   };
 }
 
 export function toSaveData(state: GameState): GameSaveData {
+  const valleys = syncActiveValleyIntoValleys(state);
+
   return {
     version: SAVE_VERSION,
     savedAt: new Date().toISOString(),
+    user: state.user,
     player: state.player,
     skills: state.skills,
     inventory: state.inventory,
-    regions: state.regions,
-    quests: state.quests,
-    animals: state.animals,
-    restoration: state.restoration,
-    events: state.events,
-    minigames: state.minigames,
-    decorations: state.decorations,
+    activeValleyId: state.activeValleyId,
+    valleys,
+    memberships: state.memberships,
+    pendingInvites: state.pendingInvites,
+    visitSessions: state.visitSessions,
   };
-}
-
-function normalizeActiveRegionId(
-  player: Player,
-  regions: Record<string, Region>,
-): Player {
-  const activeRegionId = player.activeRegionId;
-
-  if (!activeRegionId || !regions[activeRegionId]) {
-    return {
-      ...player,
-      activeRegionId: REGION_IDS.VALLEY,
-    };
-  }
-
-  return player;
 }
 
 export function fromSaveData(data: GameSaveData): Omit<
@@ -98,22 +201,98 @@ export function fromSaveData(data: GameSaveData): Omit<
   "isHydrated" | "isSaving" | "lastSavedAt" | "saveError"
 > {
   const defaults = createInitialGameState();
+  const activeValleyId = data.activeValleyId ?? defaults.activeValleyId;
+  const mergedValleys = mergeAllValleySaveData(data.valleys);
 
-  const player = normalizeActiveRegionId(
-    mergePlayer(defaults.player, data.player),
-    mergeKeyedRecord(defaults.regions, data.regions),
+  if (!mergedValleys[activeValleyId]) {
+    mergedValleys[activeValleyId] = createDefaultValleySaveData();
+  }
+
+  const mergedValleySave = mergedValleys[activeValleyId];
+
+  const player = mergePlayer(defaults.player, data.player);
+  const user = data.user
+    ? {
+        ...defaults.user,
+        ...data.user,
+        displayName:
+          data.user.displayName ||
+          data.player.displayName ||
+          defaults.user.displayName,
+      }
+    : {
+        ...defaults.user,
+        displayName: data.player.displayName || defaults.user.displayName,
+      };
+
+  return {
+    user,
+    player: {
+      ...player,
+      userId: player.userId ?? defaults.player.userId,
+    },
+    activeValleyId,
+    valleys: mergedValleys,
+    valley: extractValleyMetadata(mergedValleySave),
+    memberships: mergePlainRecord(defaults.memberships, data.memberships),
+    pendingInvites: mergePlainRecord(defaults.pendingInvites, data.pendingInvites),
+    visitSessions: mergePlainRecord(defaults.visitSessions, data.visitSessions),
+    skills: normalizeSkillsState(data.skills),
+    inventory: Array.isArray(data.inventory) ? data.inventory : defaults.inventory,
+    ...applyValleyGameplayToState(extractValleyGameplay(mergedValleySave)),
+  };
+}
+
+/** @internal Used by save migration to seed v3 valley records from v2 flat saves. */
+export function createValleySaveFromLegacyFlatSave(data: {
+  player: Player & { activeRegionId?: RegionId | null };
+  regions: Record<string, Region>;
+  quests: Record<string, Quest>;
+  animals: Record<string, Animal>;
+  restoration: Record<string, RestorationProject>;
+  events: Record<string, Event>;
+  minigames: Record<string, MiniGame>;
+  decorations: Record<string, Decoration>;
+}): ValleySaveData {
+  const defaults = createDefaultValleySaveData();
+  const regions = mergeKeyedRecord(defaults.regions, data.regions);
+  const activeRegionId = normalizeActiveRegionId(
+    data.player.activeRegionId ?? defaults.activeRegionId,
+    regions,
   );
 
   return {
-    player,
-    skills: normalizeSkillsState(data.skills),
-    inventory: Array.isArray(data.inventory) ? data.inventory : defaults.inventory,
-    regions: mergeKeyedRecord(defaults.regions, data.regions),
+    ...defaults,
+    activeRegionId,
+    regions,
     quests: mergeKeyedRecord(defaults.quests, data.quests),
     animals: mergeKeyedRecord(defaults.animals, data.animals),
     restoration: mergeKeyedRecord(defaults.restoration, data.restoration),
     events: mergeKeyedRecord(defaults.events, data.events),
     minigames: mergeKeyedRecord(defaults.minigames, data.minigames),
     decorations: mergeKeyedRecord(defaults.decorations, data.decorations),
+  };
+}
+
+/** @internal Used by save migration to strip legacy player location fields. */
+export function stripLegacyPlayerLocation(player: Player & {
+  activeRegionId?: RegionId | null;
+}): Player {
+  const { activeRegionId: _legacyActiveRegionId, ...rest } = player;
+
+  return rest;
+}
+
+/** @internal Used by save migration when v2 saves lack account metadata. */
+export function createUserFromLegacyPlayer(
+  player: Player & { activeRegionId?: RegionId | null },
+): GameUser {
+  const defaultUser = createDefaultGameUser();
+
+  return {
+    id: player.userId ?? defaultUser.id,
+    displayName: player.displayName,
+    createdAt: player.createdAt,
+    lastSeenAt: player.lastPlayedAt,
   };
 }

@@ -1,5 +1,6 @@
 import type { RegionId } from "@/types";
 import type { GameStore } from "../game-store";
+import { hasActiveValleyPermission } from "../valley-state";
 
 export interface RegionsSlice {
   setActiveRegionId: (regionId: RegionId) => boolean;
@@ -31,15 +32,16 @@ export function createRegionsSlice(set: SetState, get: GetState): RegionsSlice {
     setActiveRegionId(regionId) {
       const state = get();
 
+      if (!hasActiveValleyPermission(state, "view_valley")) {
+        return false;
+      }
+
       if (!isRegionTravelable(state.regions, regionId)) {
         return false;
       }
 
       set({
-        player: {
-          ...state.player,
-          activeRegionId: regionId,
-        },
+        activeRegionId: regionId,
       });
 
       return true;

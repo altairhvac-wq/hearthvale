@@ -7,7 +7,6 @@ import { describeUnlockRequirement } from "@/game/unlock/descriptions";
 import { isUnlockRequirementMet } from "@/game/unlock/requirements";
 import type { UnlockEvaluationContext } from "@/game/unlock/context";
 import type {
-  Player,
   Region,
   RegionDefinition,
   RegionId,
@@ -81,7 +80,7 @@ function canTravelToRegion(region: Region): boolean {
 function buildRegionViewModel(
   definition: RegionDefinition,
   runtime: Region,
-  player: Player,
+  activeRegionId: RegionId | null,
   context: UnlockEvaluationContext,
 ): RegionViewModel {
   const displayStatus = deriveRegionDisplayStatus(runtime);
@@ -113,7 +112,7 @@ function buildRegionViewModel(
       unlockRequirementDescription,
       isUnlockRequirementMetValue,
     ),
-    isActive: player.activeRegionId === definition.id,
+    isActive: activeRegionId === definition.id,
     canTravel: canTravelToRegion(runtime),
     isOnMap: mapNode !== null,
     mapPosition: mapNode?.position ?? null,
@@ -122,7 +121,7 @@ function buildRegionViewModel(
 }
 
 export function buildValleyMapData(
-  player: Player,
+  activeRegionId: RegionId | null,
   regions: Record<string, Region>,
   context: UnlockEvaluationContext,
 ): ValleyMapData {
@@ -138,7 +137,7 @@ export function buildValleyMapData(
         return null;
       }
 
-      return buildRegionViewModel(definition, runtime, player, context);
+      return buildRegionViewModel(definition, runtime, activeRegionId, context);
     })
     .filter((entry): entry is RegionViewModel => entry !== null);
 
@@ -155,7 +154,7 @@ export function buildValleyMapData(
       from: connection.from,
       to: connection.to,
     })),
-    activeRegionId: player.activeRegionId,
+    activeRegionId,
     reachableCount,
     mappedRegionCount,
   };

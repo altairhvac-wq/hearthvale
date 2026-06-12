@@ -5,7 +5,7 @@ import { useGameStore, useHydratedGameStore } from "@/store";
 
 export function useValleyMapData() {
   return useHydratedGameStore((state) =>
-    buildValleyMapData(state.player, state.regions, {
+    buildValleyMapData(state.activeRegionId, state.regions, {
       quests: state.quests,
       skills: state.skills,
       regions: state.regions,
