@@ -85,7 +85,13 @@ export function createQuestsSlice(set: SetState, get: GetState): QuestsSlice {
     },
 
     completeQuest(questId) {
-      return questService.completeQuest(questId);
+      const result = questService.completeQuest(questId);
+
+      if (result) {
+        get().refreshMiniGameAvailability();
+      }
+
+      return result;
     },
 
     updateQuestObjective(questId, objectiveId, current) {

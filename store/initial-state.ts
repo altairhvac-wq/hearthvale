@@ -16,6 +16,7 @@ import { mergeAnimalsState, mergeAnimalSpeciesState } from "@/game/animals/state
 import { mergeQuestsState } from "@/game/quests/state";
 import { mergeRestorationState, syncRegionsWithRestorationState } from "@/game/restoration/state";
 import { mergeEventsState } from "@/game/events/state";
+import { mergeMiniGamesState } from "@/game/minigames/state";
 import {
   mergeKeyedRecord,
   mergePlainRecord,
@@ -108,7 +109,7 @@ function mergeValleySaveData(
     animalSpecies: mergeAnimalSpeciesState(saved.animalSpecies, animals),
     restoration,
     events: mergeEventsState(saved.events),
-    minigames: mergeKeyedRecord(defaults.minigames, saved.minigames),
+    minigames: mergeMiniGamesState(saved.minigames),
     decorations: mergeKeyedRecord(defaults.decorations, saved.decorations),
   };
 }
@@ -284,7 +285,7 @@ export function createValleySaveFromLegacyFlatSave(data: {
     animalSpecies: mergeAnimalSpeciesState(undefined, animals),
     restoration: mergeRestorationState(data.restoration),
     events: mergeEventsState(data.events),
-    minigames: mergeKeyedRecord(defaults.minigames, data.minigames),
+    minigames: mergeMiniGamesState(data.minigames),
     decorations: mergeKeyedRecord(defaults.decorations, data.decorations),
   };
 }

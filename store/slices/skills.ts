@@ -54,7 +54,13 @@ export function createSkillsSlice(set: SetState, get: GetState): SkillsSlice {
       }
 
       const result = skillService.awardXp(skillId, amount);
-      return result?.newUnlocks ?? [];
+      const unlocks = result?.newUnlocks ?? [];
+
+      if (unlocks.length > 0) {
+        get().refreshMiniGameAvailability();
+      }
+
+      return unlocks;
     },
 
     getSkillLevel(skillId) {

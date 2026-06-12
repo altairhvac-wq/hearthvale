@@ -5,3 +5,4 @@ export * from "./quests";
 export * from "./restoration";
 export * from "./skills";
 export * from "./events";
+export * from "./minigames";

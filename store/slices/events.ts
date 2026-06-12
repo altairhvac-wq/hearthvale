@@ -52,11 +52,25 @@ export function createEventsSlice(set: SetState, get: GetState): EventsSlice {
 
   return {
     refreshEventScheduler(rolls) {
-      return eventService.refreshEventScheduler(rolls);
+      const result = eventService.refreshEventScheduler(rolls);
+      get().refreshMiniGameAvailability();
+      return result;
     },
 
     activateFeaturedEvent() {
-      return eventService.activateFeaturedEvent();
+      const activated = eventService.activateFeaturedEvent();
+
+      if (activated) {
+        const featuredEventId = get().events.scheduler.featuredEventId;
+
+        if (featuredEventId) {
+          get().activateMiniGameFromEvent(featuredEventId);
+        }
+
+        get().refreshMiniGameAvailability();
+      }
+
+      return activated;
     },
 
     completeFeaturedEvent() {
@@ -64,6 +78,7 @@ export function createEventsSlice(set: SetState, get: GetState): EventsSlice {
 
       if (result) {
         eventService.refreshEventScheduler();
+        get().refreshMiniGameAvailability();
       }
 
       return result;
