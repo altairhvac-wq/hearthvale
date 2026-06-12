@@ -12,7 +12,12 @@ import {
   createInitialVisitSessionsState,
 } from "@/game/valley";
 import { REGION_IDS } from "@/game/constants/regions";
-import { mergeKeyedRecord, mergePlainRecord, mergePlayer } from "./merge-state";
+import { mergeQuestsState } from "@/game/quests/state";
+import {
+  mergeKeyedRecord,
+  mergePlainRecord,
+  mergePlayer,
+} from "./merge-state";
 import {
   extractValleyGameplay,
   extractValleyMetadata,
@@ -92,7 +97,7 @@ function mergeValleySaveData(
     ...saved,
     activeRegionId,
     regions,
-    quests: mergeKeyedRecord(defaults.quests, saved.quests),
+    quests: mergeQuestsState(saved.quests),
     animals: mergeKeyedRecord(defaults.animals, saved.animals),
     restoration: mergeKeyedRecord(defaults.restoration, saved.restoration),
     events: mergeKeyedRecord(defaults.events, saved.events),
@@ -265,7 +270,7 @@ export function createValleySaveFromLegacyFlatSave(data: {
     ...defaults,
     activeRegionId,
     regions,
-    quests: mergeKeyedRecord(defaults.quests, data.quests),
+    quests: mergeQuestsState(data.quests),
     animals: mergeKeyedRecord(defaults.animals, data.animals),
     restoration: mergeKeyedRecord(defaults.restoration, data.restoration),
     events: mergeKeyedRecord(defaults.events, data.events),

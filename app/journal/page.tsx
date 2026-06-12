@@ -1,10 +1,5 @@
-import { ComingSoonScreen } from "@/features/coming-soon";
+import { QuestJournalScreen } from "@/features/quest-journal";
 
 export default function JournalPage() {
-  return (
-    <ComingSoonScreen
-      title="Journal"
-      description="Stories, quests, and discoveries will be recorded here as your journey unfolds across Hearthvale."
-    />
-  );
+  return <QuestJournalScreen />;
 }

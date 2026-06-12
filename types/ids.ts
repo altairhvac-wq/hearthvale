@@ -8,6 +8,7 @@ export type ValleyInviteId = Brand<string, "ValleyInviteId">;
 export type VisitSessionId = Brand<string, "VisitSessionId">;
 export type AnimalId = Brand<string, "AnimalId">;
 export type QuestId = Brand<string, "QuestId">;
+export type SeasonId = Brand<string, "SeasonId">;
 export type ResourceId = Brand<string, "ResourceId">;
 export type RegionId = Brand<string, "RegionId">;
 export type SkillId = Brand<string, "SkillId">;

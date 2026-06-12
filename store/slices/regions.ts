@@ -44,6 +44,8 @@ export function createRegionsSlice(set: SetState, get: GetState): RegionsSlice {
         activeRegionId: regionId,
       });
 
+      get().syncActiveQuestObjectives();
+
       return true;
     },
   };

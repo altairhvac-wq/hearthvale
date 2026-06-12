@@ -25,6 +25,11 @@ export function GameProvider({ children }: GameProviderProps) {
 
     hydrate();
     touchLastPlayed();
+
+    const state = useGameStore.getState();
+    state.refreshQuestAvailability();
+    state.syncActiveQuestObjectives();
+
     persist();
 
     return () => {

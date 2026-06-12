@@ -1,18 +1,48 @@
+import { getQuestDefinition } from "@/game/constants/quests";
 import type { UnlockRequirement } from "@/types";
 import type { UnlockEvaluationContext } from "./context";
 
-/** Stub evaluator — returns false until gameplay systems wire requirements. */
 export function isUnlockRequirementMet(
   requirement: UnlockRequirement,
   context?: UnlockEvaluationContext,
 ): boolean {
-  void requirement;
-  void context;
-  return false;
+  if (!context) {
+    return false;
+  }
+
+  switch (requirement.kind) {
+    case "quest_completed": {
+      const quest = context.quests[requirement.questId];
+      return quest?.status === "completed";
+    }
+    case "restoration_completed": {
+      const project = context.restoration[requirement.projectId];
+      return project?.status === "completed";
+    }
+    case "skill_level":
+      return (
+        context.getSkillLevel(requirement.skillId) >= requirement.level
+      );
+    case "region_state": {
+      const region = context.regions[requirement.regionId];
+      if (!region) {
+        return false;
+      }
+      if (requirement.state === "restored") {
+        return region.state === "restored";
+      }
+      return region.state === "unlocked" || region.state === "restored";
+    }
+  }
 }
 
 export function isUnlockRequirementDefined(
   requirement: UnlockRequirement | null,
 ): requirement is UnlockRequirement {
   return requirement !== null;
+}
+
+export function describeQuestUnlockRequirement(questId: string): string | null {
+  const quest = getQuestDefinition(questId);
+  return quest ? `Complete quest: ${quest.title}` : null;
 }

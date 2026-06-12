@@ -1,5 +1,6 @@
 import type {
   GameSaveData,
+  QuestStatus,
   SkillProgress,
   ValleyInviteStatus,
   ValleyPermission,
@@ -23,6 +24,13 @@ const VALLEY_INVITE_STATUSES: readonly ValleyInviteStatus[] = [
   "declined",
   "expired",
   "revoked",
+];
+
+const QUEST_STATUSES: readonly QuestStatus[] = [
+  "locked",
+  "available",
+  "active",
+  "completed",
 ];
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -79,6 +87,52 @@ function isNullableString(value: unknown): value is string | null {
   return value === null || typeof value === "string";
 }
 
+function isQuestStatus(value: unknown): value is QuestStatus {
+  return (
+    typeof value === "string" &&
+    (QUEST_STATUSES as readonly string[]).includes(value)
+  );
+}
+
+function isQuestObjective(value: unknown): boolean {
+  if (!isObject(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.id === "string" &&
+    typeof value.description === "string" &&
+    typeof value.target === "number" &&
+    Number.isFinite(value.target) &&
+    typeof value.current === "number" &&
+    Number.isFinite(value.current) &&
+    typeof value.completed === "boolean"
+  );
+}
+
+function isQuest(value: unknown): boolean {
+  if (!isObject(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.id === "string" &&
+    isQuestStatus(value.status) &&
+    isArray(value.objectives) &&
+    value.objectives.every(isQuestObjective) &&
+    isNullableString(value.startedAt) &&
+    isNullableString(value.completedAt)
+  );
+}
+
+function isQuestRecord(value: unknown): boolean {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return Object.values(value).every(isQuest);
+}
+
 function isValleySaveData(value: unknown): boolean {
   if (!isObject(value)) {
     return false;
@@ -94,7 +148,7 @@ function isValleySaveData(value: unknown): boolean {
     typeof value.updatedAt === "string" &&
     (activeRegionId === null || typeof activeRegionId === "string") &&
     isRecord(value.regions) &&
-    isRecord(value.quests) &&
+    isQuestRecord(value.quests) &&
     isRecord(value.animals) &&
     isRecord(value.restoration) &&
     isRecord(value.events) &&
