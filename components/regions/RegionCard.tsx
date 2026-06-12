@@ -12,7 +12,7 @@ interface RegionCardProps {
   onSelect?: (regionId: RegionViewModel["id"]) => void;
   compact?: boolean;
   className?: string;
-  /** Optional slot for future restoration projects, quest hints, etc. */
+  /** Optional slot for restoration projects, quest hints, etc. */
   footer?: ReactNode;
 }
 
@@ -27,7 +27,7 @@ export function RegionCard({
   const isLocked = region.displayStatus === "locked";
   const progress = getRegionProgressPresentation(region.displayStatus);
 
-  const content = (
+  const body = (
     <>
       <div className="flex items-start gap-3">
         <div
@@ -85,24 +85,34 @@ export function RegionCard({
           </p>
         </div>
       ) : null}
-
-      {footer ? <div className="mt-3">{footer}</div> : null}
     </>
   );
 
-  const cardClasses = `rounded-2xl border bg-white/75 p-4 shadow-sm backdrop-blur-sm transition-all ${theme.border} ${region.isActive ? `ring-2 ring-offset-1 ${theme.nodeRing}` : ""} ${isLocked ? "opacity-90" : "hover:shadow-md"} ${className}`;
+  const cardClasses = `rounded-2xl border bg-white/75 shadow-sm backdrop-blur-sm transition-all ${theme.border} ${region.isActive ? `ring-2 ring-offset-1 ${theme.nodeRing}` : ""} ${isLocked ? "opacity-90" : "hover:shadow-md"} ${className}`;
 
   if (onSelect) {
     return (
-      <button
-        type="button"
-        onClick={() => onSelect(region.id)}
-        className={`${cardClasses} w-full text-left`}
-      >
-        {content}
-      </button>
+      <article className={cardClasses}>
+        <button
+          type="button"
+          onClick={() => onSelect(region.id)}
+          className="w-full p-4 text-left"
+        >
+          {body}
+        </button>
+        {footer ? (
+          <div className="border-t border-stone-100/80 px-4 pb-4 pt-3">
+            {footer}
+          </div>
+        ) : null}
+      </article>
     );
   }
 
-  return <article className={cardClasses}>{content}</article>;
+  return (
+    <article className={`${cardClasses} p-4`}>
+      {body}
+      {footer ? <div className="mt-3">{footer}</div> : null}
+    </article>
+  );
 }

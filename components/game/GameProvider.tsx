@@ -29,6 +29,7 @@ export function GameProvider({ children }: GameProviderProps) {
     const state = useGameStore.getState();
     state.refreshQuestAvailability();
     state.syncActiveQuestObjectives();
+    state.refreshRestorationAvailability();
 
     persist();
 

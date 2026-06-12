@@ -4,6 +4,7 @@ export * from "./user";
 export * from "./valley";
 export * from "./player";
 export * from "./animal";
+export * from "./reward";
 export * from "./quest";
 export * from "./inventory";
 export * from "./region";

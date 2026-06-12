@@ -13,6 +13,7 @@ import {
 } from "@/game/valley";
 import { REGION_IDS } from "@/game/constants/regions";
 import { mergeQuestsState } from "@/game/quests/state";
+import { mergeRestorationState, syncRegionsWithRestorationState } from "@/game/restoration/state";
 import {
   mergeKeyedRecord,
   mergePlainRecord,
@@ -91,15 +92,16 @@ function mergeValleySaveData(
 
   const regions = mergeKeyedRecord(defaults.regions, saved.regions);
   const activeRegionId = normalizeActiveRegionId(saved.activeRegionId, regions);
+  const restoration = mergeRestorationState(saved.restoration);
 
   return {
     ...defaults,
     ...saved,
     activeRegionId,
-    regions,
+    regions: syncRegionsWithRestorationState(regions, restoration),
     quests: mergeQuestsState(saved.quests),
     animals: mergeKeyedRecord(defaults.animals, saved.animals),
-    restoration: mergeKeyedRecord(defaults.restoration, saved.restoration),
+    restoration,
     events: mergeKeyedRecord(defaults.events, saved.events),
     minigames: mergeKeyedRecord(defaults.minigames, saved.minigames),
     decorations: mergeKeyedRecord(defaults.decorations, saved.decorations),
@@ -272,7 +274,7 @@ export function createValleySaveFromLegacyFlatSave(data: {
     regions,
     quests: mergeQuestsState(data.quests),
     animals: mergeKeyedRecord(defaults.animals, data.animals),
-    restoration: mergeKeyedRecord(defaults.restoration, data.restoration),
+    restoration: mergeRestorationState(data.restoration),
     events: mergeKeyedRecord(defaults.events, data.events),
     minigames: mergeKeyedRecord(defaults.minigames, data.minigames),
     decorations: mergeKeyedRecord(defaults.decorations, data.decorations),

@@ -1,12 +1,5 @@
-import type {
-  ItemId,
-  QuestId,
-  RegionId,
-  ResourceId,
-  SeasonId,
-  SkillId,
-} from "./ids";
-import type { UnlockReference } from "./unlock-requirement";
+import type { QuestId, RegionId, ResourceId, SeasonId, SkillId } from "./ids";
+import type { GameReward } from "./reward";
 
 export type QuestStatus = "locked" | "available" | "active" | "completed";
 
@@ -25,11 +18,7 @@ export type QuestCategory =
 /** Controls whether a quest appears in the journal before discovery. */
 export type QuestVisibility = "visible" | "hidden";
 
-export type QuestReward =
-  | { type: "resource"; resourceId: ResourceId; amount: number }
-  | { type: "skill_xp"; skillId: SkillId; amount: number }
-  | { type: "unlock"; unlock: UnlockReference }
-  | { type: "item"; itemId: ItemId; amount: number };
+export type QuestReward = GameReward;
 
 export interface QuestObjective {
   id: string;

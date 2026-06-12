@@ -1,4 +1,12 @@
-import type { RegionId, ResourceId, RestorationProjectId } from "./ids";
+import type {
+  QuestId,
+  RegionId,
+  ResourceId,
+  RestorationProjectId,
+  SkillId,
+} from "./ids";
+import type { GameReward } from "./reward";
+import type { GameUser } from "./user";
 import type { UnlockRequirement } from "./unlock-requirement";
 
 export type RestorationProjectStatus =
@@ -7,12 +15,26 @@ export type RestorationProjectStatus =
   | "in_progress"
   | "completed";
 
+export interface RestorationResourceRequirement {
+  resourceId: ResourceId;
+  amount: number;
+}
+
 export interface RestorationStage {
   id: string;
   label: string;
   description: string;
-  requiredResources: Array<{ resourceId: ResourceId; amount: number }>;
+  requiredResources: RestorationResourceRequirement[];
   completionBonusXp: number;
+  /** Defaults to the Restoration skill when omitted. */
+  skillId?: SkillId;
+}
+
+/** Quests that should start or sync when this project progresses. */
+export interface RestorationQuestLink {
+  questId: QuestId;
+  /** Auto-start the quest when the project begins. */
+  startOnProjectStart?: boolean;
 }
 
 export interface RestorationProjectDefinition {
@@ -22,6 +44,16 @@ export interface RestorationProjectDefinition {
   description: string;
   stages: RestorationStage[];
   unlockRequirement: UnlockRequirement | null;
+  completionRewards: GameReward[];
+  linkedQuestIds?: RestorationQuestLink[];
+  sortOrder: number;
+}
+
+/** Per-member contribution totals — ready for shared-valley restoration. */
+export interface RestorationContribution {
+  userId: GameUser["id"];
+  completedStageIds: string[];
+  resourcesContributed: number;
 }
 
 export interface RestorationProject {
@@ -32,4 +64,6 @@ export interface RestorationProject {
   completedStageIds: string[];
   startedAt: string | null;
   completedAt: string | null;
+  /** Collaborative restoration ledger — empty until multiplayer ships. */
+  contributions: RestorationContribution[];
 }

@@ -11,6 +11,7 @@ import {
   useIsGameHydrated,
   usePlayerHeaderData,
 } from "@/store";
+import { RegionRestorationFooter } from "@/features/restoration";
 import { useSetActiveRegion, useValleyMapData } from "./use-valley-map";
 
 export function ValleyMapScreen() {
@@ -81,6 +82,9 @@ export function ValleyMapScreen() {
           <RegionCard
             region={selectedRegion}
             onSelect={handleSelectRegion}
+            footer={
+              <RegionRestorationFooter regionId={selectedRegion.id} />
+            }
           />
         ) : null}
 
@@ -101,6 +105,9 @@ export function ValleyMapScreen() {
                 region={region}
                 compact
                 onSelect={handleSelectRegion}
+                footer={
+                  <RegionRestorationFooter regionId={region.id} compact />
+                }
                 className={
                   region.id === activeSelection
                     ? "ring-2 ring-emerald-300/60"

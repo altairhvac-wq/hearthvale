@@ -1,6 +1,7 @@
 import type {
   GameSaveData,
   QuestStatus,
+  RestorationProjectStatus,
   SkillProgress,
   ValleyInviteStatus,
   ValleyPermission,
@@ -30,6 +31,13 @@ const QUEST_STATUSES: readonly QuestStatus[] = [
   "locked",
   "available",
   "active",
+  "completed",
+];
+
+const RESTORATION_STATUSES: readonly RestorationProjectStatus[] = [
+  "locked",
+  "available",
+  "in_progress",
   "completed",
 ];
 
@@ -133,6 +141,56 @@ function isQuestRecord(value: unknown): boolean {
   return Object.values(value).every(isQuest);
 }
 
+function isRestorationStatus(value: unknown): value is RestorationProjectStatus {
+  return (
+    typeof value === "string" &&
+    (RESTORATION_STATUSES as readonly string[]).includes(value)
+  );
+}
+
+function isRestorationContribution(value: unknown): boolean {
+  if (!isObject(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.userId === "string" &&
+    isArray(value.completedStageIds) &&
+    value.completedStageIds.every((entry) => typeof entry === "string") &&
+    typeof value.resourcesContributed === "number" &&
+    Number.isFinite(value.resourcesContributed)
+  );
+}
+
+function isRestorationProject(value: unknown): boolean {
+  if (!isObject(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.id === "string" &&
+    typeof value.regionId === "string" &&
+    isRestorationStatus(value.status) &&
+    typeof value.currentStageIndex === "number" &&
+    Number.isFinite(value.currentStageIndex) &&
+    value.currentStageIndex >= 0 &&
+    isArray(value.completedStageIds) &&
+    value.completedStageIds.every((entry) => typeof entry === "string") &&
+    isNullableString(value.startedAt) &&
+    isNullableString(value.completedAt) &&
+    isArray(value.contributions) &&
+    value.contributions.every(isRestorationContribution)
+  );
+}
+
+function isRestorationRecord(value: unknown): boolean {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return Object.values(value).every(isRestorationProject);
+}
+
 function isValleySaveData(value: unknown): boolean {
   if (!isObject(value)) {
     return false;
@@ -150,7 +208,7 @@ function isValleySaveData(value: unknown): boolean {
     isRecord(value.regions) &&
     isQuestRecord(value.quests) &&
     isRecord(value.animals) &&
-    isRecord(value.restoration) &&
+    isRestorationRecord(value.restoration) &&
     isRecord(value.events) &&
     isRecord(value.minigames) &&
     isRecord(value.decorations)

@@ -5,7 +5,49 @@ import {
   RESOURCE_IDS,
   type CoreResourceId,
 } from "@/game/constants/resources";
-import type { PlayerResources, ResourceId } from "@/types";
+import type { PlayerResources, ResourceId, RestorationResourceRequirement } from "@/types";
+
+export function getResourceAmount(
+  resources: PlayerResources,
+  resourceId: ResourceId,
+): number {
+  return resources[resourceId] ?? 0;
+}
+
+export function canAffordResources(
+  resources: PlayerResources,
+  required: RestorationResourceRequirement[],
+): boolean {
+  return required.every(
+    (entry) => getResourceAmount(resources, entry.resourceId) >= entry.amount,
+  );
+}
+
+export function sumRequiredResources(
+  required: RestorationResourceRequirement[],
+): number {
+  return required.reduce((total, entry) => total + entry.amount, 0);
+}
+
+/** Returns updated resources when affordable; otherwise null. */
+export function spendResourcesIfAffordable(
+  resources: PlayerResources,
+  required: RestorationResourceRequirement[],
+): PlayerResources | null {
+  if (!canAffordResources(resources, required)) {
+    return null;
+  }
+
+  const nextResources = { ...resources };
+
+  for (const entry of required) {
+    nextResources[entry.resourceId] =
+      (nextResources[entry.resourceId] ?? 0) - entry.amount;
+  }
+
+  return nextResources;
+}
+
 
 export interface ResourceDisplayItem {
   id: ResourceId;

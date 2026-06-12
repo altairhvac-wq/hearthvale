@@ -1,13 +1,13 @@
-import type { AnimalSpeciesId, ItemId, QuestId, RegionId, ResourceId, SkillId } from "@/types";
+import type { QuestId } from "@/types";
 import { buildQuestEvaluationContext } from "@/game/quests/context";
 import {
   createQuestService,
-  createUnlockApplicator,
 } from "@/game/quests/service";
 import type { QuestCompletionResult } from "@/game/quests/service";
 import type { QuestJournalData } from "@/game/quests/view-model";
 import { buildQuestJournalData } from "@/game/quests/view-model";
 import type { GameStore } from "../game-store";
+import { createStoreGameRewardCallbacks } from "./game-reward-callbacks";
 
 export interface QuestsSlice {
   startQuest: (questId: QuestId) => boolean;
@@ -49,52 +49,7 @@ export function createQuestsSlice(set: SetState, get: GetState): QuestsSlice {
     });
   }
 
-  const applyUnlock = createUnlockApplicator({
-    unlockRegion(regionId: RegionId) {
-      set((state) => {
-        const region = state.regions[regionId];
-
-        if (!region || region.state !== "locked") {
-          return state;
-        }
-
-        return {
-          regions: {
-            ...state.regions,
-            [regionId]: {
-              ...region,
-              state: "unlocked",
-              unlockedAt: new Date().toISOString(),
-            },
-          },
-        };
-      });
-    },
-
-    unlockQuest(questId: QuestId) {
-      set((state) => {
-        const quest = state.quests[questId];
-
-        if (!quest || quest.status !== "locked") {
-          return state;
-        }
-
-        return {
-          quests: {
-            ...state.quests,
-            [questId]: {
-              ...quest,
-              status: "available",
-            },
-          },
-        };
-      });
-    },
-
-    unlockAnimal(speciesId: AnimalSpeciesId) {
-      void speciesId;
-    },
-  });
+  const rewardCallbacks = createStoreGameRewardCallbacks(set, get);
 
   const questService = createQuestService(
     () => get().quests,
@@ -115,31 +70,7 @@ export function createQuestsSlice(set: SetState, get: GetState): QuestsSlice {
       });
     },
     buildQuestContext,
-    {
-      awardResource(resourceId: ResourceId, amount: number) {
-        set((state) => ({
-          player: {
-            ...state.player,
-            resources: {
-              ...state.player.resources,
-              [resourceId]:
-                (state.player.resources[resourceId] ?? 0) + amount,
-            },
-          },
-        }));
-      },
-
-      awardSkillXp(skillId: SkillId, amount: number) {
-        get().addSkillXp(skillId, amount);
-      },
-
-      applyUnlock,
-
-      awardItem(itemId: ItemId, amount: number) {
-        void itemId;
-        void amount;
-      },
-    },
+    rewardCallbacks,
   );
 
   return {
