@@ -2,6 +2,11 @@ import { FOUNDATION_EPOCH } from "@/game/constants/foundation";
 import { REGION_DEFINITIONS, REGION_IDS } from "@/game/constants/regions";
 import type { Region, RegionId } from "@/types";
 
+export function getRegionDefinitionName(regionId: RegionId): string {
+  const definition = REGION_DEFINITIONS.find((entry) => entry.id === regionId);
+  return definition?.name ?? regionId;
+}
+
 export function createInitialRegionsState(): Record<string, Region> {
   return REGION_DEFINITIONS.reduce<Record<string, Region>>((acc, definition) => {
     const isStartingRegion = definition.id === REGION_IDS.VALLEY;
@@ -39,7 +44,7 @@ export function getRegionDisplayName(
 
   const runtime = regions[regionId];
   if (runtime) {
-    return regionId.charAt(0).toUpperCase() + regionId.slice(1);
+    return getRegionDefinitionName(regionId);
   }
 
   return regionId;

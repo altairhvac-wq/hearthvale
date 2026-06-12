@@ -12,8 +12,9 @@ import {
   resetPersistableSnapshot,
 } from "./persistable-state";
 import { createSkillsSlice, type SkillsSlice } from "./slices/skills";
+import { createRegionsSlice, type RegionsSlice } from "./slices/regions";
 
-export interface GameStore extends GameState, SkillsSlice {
+export interface GameStore extends GameState, SkillsSlice, RegionsSlice {
   hydrate: () => void;
   persist: () => boolean;
   resetGame: () => void;
@@ -57,6 +58,7 @@ export const useGameStore = create<GameStore>()(
     lastSavedAt: null,
     saveError: null,
     ...createSkillsSlice(set, get),
+    ...createRegionsSlice(set, get),
 
     hydrate() {
       const saved = loadGameSave();

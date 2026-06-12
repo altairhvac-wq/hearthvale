@@ -21,7 +21,7 @@ export const REGION_DEFINITIONS = [
   },
   {
     id: REGION_IDS.SANCTUARY,
-    name: "Sanctuary",
+    name: "Animal Sanctuary",
     description:
       "A quiet refuge where animals gather and trust is earned slowly.",
     theme: "sanctuary",
@@ -39,7 +39,7 @@ export const REGION_DEFINITIONS = [
   },
   {
     id: REGION_IDS.FOREST,
-    name: "Forest",
+    name: "Forest Path",
     description:
       "Ancient trees hold secrets, forage, and paths yet to be cleared.",
     theme: "forest",

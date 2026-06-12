@@ -1,6 +1,8 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { computePlayerLevelInfo } from "@/game/player/level";
+import { getCoreResourceDisplay } from "@/game/player/resources";
 import { useGameStore, type GameStore } from "./game-store";
 
 type HydratedSelector<T> = (state: GameStore) => T;
@@ -46,4 +48,12 @@ export function useHydratedGameStore<T>(
 
     return selector(state);
   });
+}
+
+export function usePlayerHeaderData() {
+  return useHydratedGameStore((state) => ({
+    displayName: state.player.displayName,
+    resources: getCoreResourceDisplay(state.player.resources),
+    levelInfo: computePlayerLevelInfo(state.skills),
+  }));
 }

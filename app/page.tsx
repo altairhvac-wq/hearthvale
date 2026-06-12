@@ -1,5 +1,5 @@
-import { FoundationDashboard } from "@/features/foundation";
+import { ValleyMapScreen } from "@/features/valley-map";
 
 export default function HomePage() {
-  return <FoundationDashboard />;
+  return <ValleyMapScreen />;
 }
