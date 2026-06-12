@@ -3,6 +3,8 @@ import { createId, type SkillDefinition } from "@/types";
 export const SKILL_IDS = {
   GARDENING: createId<"SkillId">("gardening"),
   FORAGING: createId<"SkillId">("foraging"),
+  WOODCUTTING: createId<"SkillId">("woodcutting"),
+  MINING: createId<"SkillId">("mining"),
   ANIMAL_CARE: createId<"SkillId">("animal_care"),
   CRAFTING: createId<"SkillId">("crafting"),
   COOKING: createId<"SkillId">("cooking"),
@@ -76,6 +78,54 @@ export const SKILL_DEFINITIONS = {
             type: "yield_bonus",
             value: 0.05,
             description: "+5% forage finds.",
+          },
+        ],
+      },
+    ],
+  },
+  [SKILL_IDS.WOODCUTTING]: {
+    id: SKILL_IDS.WOODCUTTING,
+    name: "Woodcutting",
+    description: "Harvest timber from forest groves and fallen limbs.",
+    iconKey: "woodcutting",
+    maxLevel: MAX_SKILL_LEVEL,
+    unlocks: [
+      {
+        id: createId<"UnlockId">("woodcutting_lv5_sharp_blade"),
+        skillId: SKILL_IDS.WOODCUTTING,
+        level: 5,
+        title: "Sharp Blade",
+        description: "Fell trees a little faster with cleaner cuts.",
+        perks: [
+          {
+            id: "woodcutting_yield_5",
+            type: "yield_bonus",
+            value: 0.05,
+            description: "+5% log yield.",
+          },
+        ],
+      },
+    ],
+  },
+  [SKILL_IDS.MINING]: {
+    id: SKILL_IDS.MINING,
+    name: "Mining",
+    description: "Break stone and uncover ore hidden in the earth.",
+    iconKey: "mining",
+    maxLevel: MAX_SKILL_LEVEL,
+    unlocks: [
+      {
+        id: createId<"UnlockId">("mining_lv5_sturdy_pick"),
+        skillId: SKILL_IDS.MINING,
+        level: 5,
+        title: "Sturdy Pick",
+        description: "Extract ore with fewer wasted strikes.",
+        perks: [
+          {
+            id: "mining_yield_5",
+            type: "yield_bonus",
+            value: 0.05,
+            description: "+5% ore and stone yield.",
           },
         ],
       },

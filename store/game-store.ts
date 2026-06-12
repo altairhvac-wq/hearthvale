@@ -22,8 +22,9 @@ import { createRestorationSlice, type RestorationSlice } from "./slices/restorat
 import { createEventsSlice, type EventsSlice } from "./slices/events";
 import { createMiniGamesSlice, type MiniGamesSlice } from "./slices/minigames";
 import { createMerchantSlice, type MerchantSlice } from "./slices/merchant";
+import { createGatheringSlice, type GatheringSlice } from "./slices/gathering";
 
-export interface GameStore extends GameState, SkillsSlice, RegionsSlice, QuestsSlice, RestorationSlice, AnimalsSlice, EventsSlice, MiniGamesSlice, MerchantSlice {
+export interface GameStore extends GameState, SkillsSlice, RegionsSlice, QuestsSlice, RestorationSlice, AnimalsSlice, EventsSlice, MiniGamesSlice, MerchantSlice, GatheringSlice {
   hydrate: () => void;
   persist: () => boolean;
   resetGame: () => void;
@@ -75,6 +76,7 @@ export const useGameStore = create<GameStore>()(
     ...createEventsSlice(set, get),
     ...createMiniGamesSlice(set, get),
     ...createMerchantSlice(set, get),
+    ...createGatheringSlice(set, get),
 
     hydrate() {
       const saved = loadGameSave();
@@ -88,6 +90,7 @@ export const useGameStore = create<GameStore>()(
           saveError: null,
         });
         resetPersistableSnapshot(get());
+        get().refreshGatheringState();
         return;
       }
 
@@ -156,6 +159,7 @@ export const useGameStore = create<GameStore>()(
       get().refreshQuestAvailability();
       get().refreshMiniGameAvailability();
       get().refreshMerchantSystems();
+      get().refreshGatheringState();
       return true;
     },
   })),

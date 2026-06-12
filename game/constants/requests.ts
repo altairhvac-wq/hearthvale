@@ -1,5 +1,6 @@
 import { RESOURCE_IDS } from "@/game/constants/resources";
 import { SKILL_IDS } from "@/game/constants/skills";
+import { ITEM_IDS } from "@/game/constants/items";
 import { MERCHANT_STAGE_IDS } from "@/game/constants/merchant";
 import {
   createId,
@@ -32,6 +33,7 @@ export const CUSTOMER_REQUEST_DEFINITIONS = [
         placeholderId: REQUEST_PLACEHOLDER_RESOURCES.WILDFLOWERS,
         label: "Wildflowers",
         amount: 3,
+        itemId: ITEM_IDS.WILDFLOWERS,
       },
     ],
     rewards: [
@@ -56,6 +58,7 @@ export const CUSTOMER_REQUEST_DEFINITIONS = [
         placeholderId: REQUEST_PLACEHOLDER_RESOURCES.BERRIES,
         label: "Berries",
         amount: 5,
+        itemId: ITEM_IDS.BERRIES,
       },
     ],
     rewards: [
@@ -81,6 +84,7 @@ export const CUSTOMER_REQUEST_DEFINITIONS = [
         placeholderId: REQUEST_PLACEHOLDER_RESOURCES.FISH,
         label: "Fish",
         amount: 2,
+        itemId: ITEM_IDS.RIVER_FISH,
       },
     ],
     rewards: [

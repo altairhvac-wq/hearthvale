@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { RegionId } from "@/types";
 import { GameShell } from "@/components/game/GameShell";
@@ -123,6 +124,23 @@ export function ValleyMapScreen() {
           onActivate={handleActivateEvent}
           onComplete={handleCompleteEvent}
         />
+
+        <Link
+          href="/gather"
+          className="flex items-center justify-between gap-3 rounded-2xl border border-emerald-200/70 bg-gradient-to-r from-emerald-50/90 to-amber-50/80 px-4 py-3.5 shadow-sm transition-colors hover:from-emerald-100/90 hover:to-amber-100/80"
+        >
+          <div>
+            <p className="text-sm font-semibold text-emerald-900">
+              Explore & Gather
+            </p>
+            <p className="mt-0.5 text-xs text-emerald-800/75">
+              Find wildflowers, timber, fish, and stone across the valley
+            </p>
+          </div>
+          <span className="shrink-0 rounded-full bg-emerald-600 px-3 py-1 text-xs font-semibold text-white">
+            Gather
+          </span>
+        </Link>
 
         {!festivalCartData.isVisible && !festivalCartData.isWaitingForCart ? (
           <p className="rounded-2xl border border-stone-200/70 bg-stone-50/80 px-3 py-2.5 text-center text-xs text-stone-500">

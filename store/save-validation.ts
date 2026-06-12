@@ -14,6 +14,8 @@ import { isPersistedMerchantState } from "@/game/merchant/validation";
 import { isPersistedProsperityState } from "@/game/prosperity/validation";
 import { isPersistedRequestsState } from "@/game/requests/validation";
 import { isPersistedReputationState } from "@/game/reputation/validation";
+import { isPersistedGatheringState } from "@/game/gathering/validation";
+import { isPersistedInventory } from "@/game/inventory/validation";
 
 const VALLEY_ROLES: readonly ValleyRole[] = ["owner", "member", "visitor"];
 
@@ -225,7 +227,8 @@ function isValleySaveData(value: unknown): boolean {
     isPersistedMerchantState(value.merchant) &&
     isPersistedProsperityState(value.prosperity) &&
     isPersistedRequestsState(value.requests) &&
-    isPersistedReputationState(value.reputation)
+    isPersistedReputationState(value.reputation) &&
+    isPersistedGatheringState(value.gathering)
   );
 }
 
@@ -375,7 +378,7 @@ export function isValidSaveData(value: unknown): value is GameSaveData {
     }
   }
 
-  if (!isArray(value.inventory)) {
+  if (!isPersistedInventory(value.inventory)) {
     return false;
   }
 

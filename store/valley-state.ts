@@ -22,6 +22,7 @@ export const VALLEY_GAMEPLAY_STATE_KEYS = [
   "prosperity",
   "requests",
   "reputation",
+  "gathering",
 ] as const;
 
 export type ValleyGameplayStateKey = (typeof VALLEY_GAMEPLAY_STATE_KEYS)[number];
@@ -46,6 +47,7 @@ export function pickActiveValleyGameplay(state: GameState): ValleyGameplayState 
     prosperity: state.prosperity,
     requests: state.requests,
     reputation: state.reputation,
+    gathering: state.gathering,
   };
 }
 
@@ -76,6 +78,7 @@ export function extractValleyGameplay(
     prosperity: valleySave.prosperity,
     requests: valleySave.requests,
     reputation: valleySave.reputation,
+    gathering: valleySave.gathering,
   };
 }
 

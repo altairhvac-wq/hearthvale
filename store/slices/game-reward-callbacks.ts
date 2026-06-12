@@ -1,5 +1,6 @@
 import { createUnlockApplicator } from "@/game/quests/service";
 import { spendResourcesIfAffordable } from "@/game/player/resources";
+import { addItemsToInventory } from "@/game/inventory/service";
 import type { GameRewardCallbacks } from "@/game/rewards";
 import type {
   AnimalSpeciesId,
@@ -104,8 +105,9 @@ export function createStoreGameRewardCallbacks(
     applyUnlock,
 
     awardItem(itemId: ItemId, amount: number) {
-      void itemId;
-      void amount;
+      set((state) => ({
+        inventory: addItemsToInventory(state.inventory, itemId, amount),
+      }));
     },
 
     awardProsperity(amount: number) {

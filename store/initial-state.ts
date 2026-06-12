@@ -1,5 +1,5 @@
 import { DEFAULT_VALLEY_ID } from "@/game/constants/valley";
-import { createInitialInventoryState } from "@/game/inventory";
+import { createInitialInventoryState, mergeInventoryState } from "@/game/inventory";
 import { createDefaultPlayer } from "@/game/player";
 import { normalizeSkillsState } from "@/game/skills";
 import {
@@ -21,6 +21,7 @@ import { mergeMerchantState } from "@/game/merchant/state";
 import { mergeProsperityState } from "@/game/prosperity/state";
 import { mergeRequestsState } from "@/game/requests/state";
 import { mergeReputationState } from "@/game/reputation/state";
+import { mergeGatheringState } from "@/game/gathering/state";
 import {
   mergeKeyedRecord,
   mergePlainRecord,
@@ -69,6 +70,7 @@ function applyValleyGameplayToState(
   | "prosperity"
   | "requests"
   | "reputation"
+  | "gathering"
 > {
   return {
     activeRegionId: gameplay.activeRegionId,
@@ -84,6 +86,7 @@ function applyValleyGameplayToState(
     prosperity: gameplay.prosperity,
     requests: gameplay.requests,
     reputation: gameplay.reputation,
+    gathering: gameplay.gathering,
   };
 }
 
@@ -127,6 +130,7 @@ function mergeValleySaveData(
     prosperity: mergeProsperityState(saved.prosperity),
     requests: mergeRequestsState(saved.requests),
     reputation: mergeReputationState(saved.reputation),
+    gathering: mergeGatheringState(saved.gathering),
   };
 }
 
@@ -191,6 +195,7 @@ export function buildStateForValleySwitch(
   | "prosperity"
   | "requests"
   | "reputation"
+  | "gathering"
 > | null {
   const valleys = syncActiveValleyIntoValleys(state);
   const savedValley = valleys[valleyId];
@@ -272,7 +277,7 @@ export function fromSaveData(data: GameSaveData): Omit<
     pendingInvites: mergePlainRecord(defaults.pendingInvites, data.pendingInvites),
     visitSessions: mergePlainRecord(defaults.visitSessions, data.visitSessions),
     skills: normalizeSkillsState(data.skills),
-    inventory: Array.isArray(data.inventory) ? data.inventory : defaults.inventory,
+    inventory: mergeInventoryState(data.inventory),
     ...applyValleyGameplayToState(extractValleyGameplay(mergedValleySave)),
   };
 }
@@ -311,6 +316,7 @@ export function createValleySaveFromLegacyFlatSave(data: {
     prosperity: mergeProsperityState(undefined),
     requests: mergeRequestsState(undefined),
     reputation: mergeReputationState(undefined),
+    gathering: mergeGatheringState(undefined),
   };
 }
 

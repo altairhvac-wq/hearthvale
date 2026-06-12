@@ -1,3 +1,4 @@
+import { getItemDefinitionName } from "@/game/constants/items";
 import { RESOURCE_DEFINITIONS } from "@/game/constants/resources";
 import { QUEST_DEFINITIONS } from "@/game/constants/quests";
 import { getAnimalDefinition } from "@/game/animals/definitions";
@@ -42,7 +43,7 @@ export function describeGameReward(reward: GameReward): string {
     case "unlock":
       return describeUnlockReward(reward.unlock);
     case "item":
-      return `${reward.amount} item`;
+      return `${reward.amount} ${getItemDefinitionName(reward.itemId)}`;
     case "prosperity":
       return `${reward.amount} Prosperity`;
     case "reputation":

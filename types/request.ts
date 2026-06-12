@@ -1,6 +1,6 @@
 import type { GameReward } from "./reward";
 import type { UnlockRequirement } from "./unlock-requirement";
-import type { CustomerRequestId } from "./ids";
+import type { CustomerRequestId, ItemId } from "./ids";
 
 /** Extensible request categories for future expansion. */
 export type RequestCategory =
@@ -22,6 +22,8 @@ export interface RequestResourceRequirement {
   placeholderId: string;
   label: string;
   amount: number;
+  /** When set, inventory fulfillment can resolve this requirement by item id. */
+  itemId?: ItemId;
 }
 
 /** Static catalog entry — logic lives in game/requests services. */

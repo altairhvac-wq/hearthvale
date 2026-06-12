@@ -21,6 +21,9 @@ export type UnlockId = Brand<string, "UnlockId">;
 export type MerchantStageId = Brand<string, "MerchantStageId">;
 export type CustomerRequestId = Brand<string, "CustomerRequestId">;
 export type ProsperityTierId = Brand<string, "ProsperityTierId">;
+export type GatherableResourceId = Brand<string, "GatherableResourceId">;
+export type ResourceNodeId = Brand<string, "ResourceNodeId">;
+export type ToolTypeId = Brand<string, "ToolTypeId">;
 
 const ID_PATTERN = /^[a-z][a-z0-9_]*$/;
 

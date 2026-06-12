@@ -10,6 +10,7 @@ import type { MerchantState } from "./merchant";
 import type { ProsperityState } from "./prosperity";
 import type { RequestsState } from "./request";
 import type { ReputationState } from "./reputation";
+import type { GatheringState } from "./gathering";
 import type { RestorationProject } from "./restoration";
 
 /** Who someone is within a valley — not an auth account. */
@@ -55,6 +56,7 @@ export interface ValleyGameplayState {
   prosperity: ProsperityState;
   requests: RequestsState;
   reputation: ReputationState;
+  gathering: GatheringState;
 }
 
 /** Persisted valley record — metadata plus scoped gameplay. */

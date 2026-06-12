@@ -5,6 +5,7 @@ import type {
   Decoration,
   EventsState,
   GameUser,
+  GatheringState,
   InventoryItem,
   MerchantState,
   MiniGame,
@@ -50,6 +51,7 @@ export interface GameState {
   prosperity: ProsperityState;
   requests: RequestsState;
   reputation: ReputationState;
+  gathering: GatheringState;
   isHydrated: boolean;
   isSaving: boolean;
   lastSavedAt: string | null;

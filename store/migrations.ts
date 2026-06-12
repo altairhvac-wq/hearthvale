@@ -4,6 +4,7 @@ import { createInitialMerchantState } from "@/game/merchant/state";
 import { createInitialProsperityState } from "@/game/prosperity/state";
 import { createInitialRequestsState } from "@/game/requests/state";
 import { createInitialReputationState } from "@/game/reputation/state";
+import { createInitialGatheringState } from "@/game/gathering/state";
 import type { Player, RegionId, ValleySaveData } from "@/types";
 import {
   createUserFromLegacyPlayer,
@@ -40,13 +41,20 @@ function migrateValleyToV4(valley: ValleySaveData): ValleySaveData {
   };
 }
 
-function migrateValleysToV4(
+function migrateValleyToV5(valley: ValleySaveData): ValleySaveData {
+  return {
+    ...valley,
+    gathering: valley.gathering ?? createInitialGatheringState(),
+  };
+}
+
+function migrateValleysToV5(
   valleys: Record<string, ValleySaveData>,
 ): Record<string, ValleySaveData> {
   return Object.fromEntries(
     Object.entries(valleys).map(([valleyId, valley]) => [
       valleyId,
-      migrateValleyToV4(valley),
+      migrateValleyToV5(migrateValleyToV4(valley)),
     ]),
   );
 }
@@ -116,7 +124,25 @@ export const SAVE_MIGRATIONS: SaveMigration[] = [
       return {
         ...data,
         version: 4,
-        valleys: migrateValleysToV4(valleys),
+        valleys: Object.fromEntries(
+          Object.entries(valleys).map(([valleyId, valley]) => [
+            valleyId,
+            migrateValleyToV4(valley),
+          ]),
+        ),
+      };
+    },
+  },
+  {
+    fromVersion: 4,
+    toVersion: 5,
+    migrate(data) {
+      const valleys = asKeyedRecord<ValleySaveData>(data.valleys);
+
+      return {
+        ...data,
+        version: 5,
+        valleys: migrateValleysToV5(valleys),
       };
     },
   },

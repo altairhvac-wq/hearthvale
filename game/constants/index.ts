@@ -10,3 +10,6 @@ export * from "./merchant";
 export * from "./prosperity";
 export * from "./requests";
 export * from "./reputation";
+export * from "./items";
+export * from "./tools";
+export * from "./gathering";
