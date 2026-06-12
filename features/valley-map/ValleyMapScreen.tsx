@@ -1,9 +1,12 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { RegionId } from "@/types";
 import { GameShell } from "@/components/game/GameShell";
 import { GameLoadingState } from "@/components/game/GameLoadingState";
+import { FestivalCartPanel } from "@/components/events/FestivalCartPanel";
+import { ValleyEventBanner } from "@/components/events/ValleyEventIndicator";
+import { ValleyEventIndicator } from "@/components/events/ValleyEventIndicator";
 import { RegionCard } from "@/components/regions/RegionCard";
 import { RegionMapCanvas } from "@/components/regions/RegionMapCanvas";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -12,16 +15,36 @@ import {
   usePlayerHeaderData,
 } from "@/store";
 import { RegionRestorationFooter } from "@/features/restoration";
+import {
+  useActivateFeaturedEvent,
+  useCompleteFeaturedEvent,
+  useFestivalCartData,
+  useRefreshEventScheduler,
+} from "@/features/festival-cart";
 import { useSetActiveRegion, useValleyMapData } from "./use-valley-map";
 
 export function ValleyMapScreen() {
   const isHydrated = useIsGameHydrated();
   const mapData = useValleyMapData();
+  const festivalCartData = useFestivalCartData();
   const headerData = usePlayerHeaderData();
   const setActiveRegionId = useSetActiveRegion();
+  const refreshEventScheduler = useRefreshEventScheduler();
+  const activateFeaturedEvent = useActivateFeaturedEvent();
+  const completeFeaturedEvent = useCompleteFeaturedEvent();
   const [selectedRegionId, setSelectedRegionId] = useState<RegionId | null>(
     null,
   );
+  const hasEvaluatedScheduler = useRef(false);
+
+  useEffect(() => {
+    if (!isHydrated || hasEvaluatedScheduler.current) {
+      return;
+    }
+
+    hasEvaluatedScheduler.current = true;
+    refreshEventScheduler();
+  }, [isHydrated, refreshEventScheduler]);
 
   const handleSelectRegion = useCallback(
     (regionId: RegionId) => {
@@ -35,9 +58,26 @@ export function ValleyMapScreen() {
     [mapData?.regions, setActiveRegionId],
   );
 
-  if (!isHydrated || !mapData || !headerData) {
+  const handleActivateEvent = useCallback(() => {
+    activateFeaturedEvent();
+  }, [activateFeaturedEvent]);
+
+  const handleCompleteEvent = useCallback(() => {
+    completeFeaturedEvent();
+  }, [completeFeaturedEvent]);
+
+  if (!isHydrated || !mapData || !headerData || !festivalCartData) {
     return <GameLoadingState />;
   }
+
+  const eventIndicatorByRegion = new Map(
+    festivalCartData.regionIndicators.map((indicator) => [
+      indicator.regionId,
+      indicator,
+    ]),
+  );
+
+  const eventRegionIds = new Set(eventIndicatorByRegion.keys());
 
   if (mapData.regions.length === 0) {
     return (
@@ -71,11 +111,32 @@ export function ValleyMapScreen() {
       subtitle="A living valley awaits your gentle touch"
     >
       <section className="space-y-5">
+        {festivalCartData.isVisible && festivalCartData.featuredEvent ? (
+          <ValleyEventBanner
+            eventTitle={festivalCartData.featuredEvent.title}
+            rarityLabel={festivalCartData.featuredEvent.rarityLabel}
+          />
+        ) : null}
+
+        <FestivalCartPanel
+          data={festivalCartData}
+          onActivate={handleActivateEvent}
+          onComplete={handleCompleteEvent}
+        />
+
+        {!festivalCartData.isVisible && !festivalCartData.isWaitingForCart ? (
+          <p className="rounded-2xl border border-stone-200/70 bg-stone-50/80 px-3 py-2.5 text-center text-xs text-stone-500">
+            The valley is peaceful — explore regions and check back for the
+            Festival Cart.
+          </p>
+        ) : null}
+
         <RegionMapCanvas
           regions={mapData.regions}
           connections={mapData.connections}
           selectedRegionId={activeSelection}
           onSelectRegion={handleSelectRegion}
+          eventRegionIds={eventRegionIds}
         />
 
         {selectedRegion ? (
@@ -83,7 +144,16 @@ export function ValleyMapScreen() {
             region={selectedRegion}
             onSelect={handleSelectRegion}
             footer={
-              <RegionRestorationFooter regionId={selectedRegion.id} />
+              <>
+                {eventIndicatorByRegion.get(selectedRegion.id) ? (
+                  <div className="mb-3">
+                    <ValleyEventIndicator
+                      indicator={eventIndicatorByRegion.get(selectedRegion.id)!}
+                    />
+                  </div>
+                ) : null}
+                <RegionRestorationFooter regionId={selectedRegion.id} />
+              </>
             }
           />
         ) : null}
@@ -106,7 +176,16 @@ export function ValleyMapScreen() {
                 compact
                 onSelect={handleSelectRegion}
                 footer={
-                  <RegionRestorationFooter regionId={region.id} compact />
+                  <>
+                    {eventIndicatorByRegion.get(region.id) ? (
+                      <div className="mb-3">
+                        <ValleyEventIndicator
+                          indicator={eventIndicatorByRegion.get(region.id)!}
+                        />
+                      </div>
+                    ) : null}
+                    <RegionRestorationFooter regionId={region.id} compact />
+                  </>
                 }
                 className={
                   region.id === activeSelection

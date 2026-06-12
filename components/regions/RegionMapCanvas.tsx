@@ -14,6 +14,7 @@ interface RegionMapCanvasProps {
   connections: MapConnectionViewModel[];
   selectedRegionId: RegionViewModel["id"] | null;
   onSelectRegion: (regionId: RegionViewModel["id"]) => void;
+  eventRegionIds?: ReadonlySet<RegionViewModel["id"]>;
   className?: string;
 }
 
@@ -29,6 +30,7 @@ export function RegionMapCanvas({
   connections,
   selectedRegionId,
   onSelectRegion,
+  eventRegionIds,
   className = "",
 }: RegionMapCanvasProps) {
   const positionedRegions = regions.filter((region) => region.isOnMap);
@@ -129,6 +131,11 @@ export function RegionMapCanvas({
                 ) : null}
                 {region.displayStatus === "restored" ? (
                   <span className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full bg-violet-500 ring-2 ring-white" />
+                ) : null}
+                {eventRegionIds?.has(region.id) ? (
+                  <span className="absolute -left-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-amber-400 text-[9px] ring-2 ring-white">
+                    ✨
+                  </span>
                 ) : null}
               </div>
               <span

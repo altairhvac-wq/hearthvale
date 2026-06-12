@@ -1,6 +1,6 @@
 import type { Animal, AnimalSpeciesId, AnimalSpeciesProgress } from "./animal";
 import type { Decoration } from "./decoration";
-import type { Event } from "./event";
+import type { EventsState } from "./event";
 import type { GameUserId, RegionId, ValleyId, ValleyInviteId, VisitSessionId } from "./ids";
 import type { InventoryItem } from "./inventory";
 import type { MiniGame } from "./minigame";
@@ -44,7 +44,7 @@ export interface ValleyGameplayState {
   animals: Record<string, Animal>;
   animalSpecies: Record<AnimalSpeciesId, AnimalSpeciesProgress>;
   restoration: Record<string, RestorationProject>;
-  events: Record<string, Event>;
+  events: EventsState;
   minigames: Record<string, MiniGame>;
   decorations: Record<string, Decoration>;
 }

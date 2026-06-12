@@ -11,6 +11,7 @@ import {
   isPersistedAnimalRecord,
   isPersistedAnimalSpeciesRecord,
 } from "@/game/animals/validation";
+import { isPersistedEventsState } from "@/game/events/validation";
 
 const VALLEY_ROLES: readonly ValleyRole[] = ["owner", "member", "visitor"];
 
@@ -216,7 +217,7 @@ function isValleySaveData(value: unknown): boolean {
     (value.animalSpecies === undefined ||
       isPersistedAnimalSpeciesRecord(value.animalSpecies)) &&
     isRestorationRecord(value.restoration) &&
-    isRecord(value.events) &&
+    isPersistedEventsState(value.events) &&
     isRecord(value.minigames) &&
     isRecord(value.decorations)
   );

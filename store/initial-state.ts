@@ -15,6 +15,7 @@ import { REGION_IDS } from "@/game/constants/regions";
 import { mergeAnimalsState, mergeAnimalSpeciesState } from "@/game/animals/state";
 import { mergeQuestsState } from "@/game/quests/state";
 import { mergeRestorationState, syncRegionsWithRestorationState } from "@/game/restoration/state";
+import { mergeEventsState } from "@/game/events/state";
 import {
   mergeKeyedRecord,
   mergePlainRecord,
@@ -30,7 +31,6 @@ import type { GameState } from "./game-state";
 import type {
   Animal,
   Decoration,
-  Event,
   GameSaveData,
   GameUser,
   InventoryItem,
@@ -107,7 +107,7 @@ function mergeValleySaveData(
     animals,
     animalSpecies: mergeAnimalSpeciesState(saved.animalSpecies, animals),
     restoration,
-    events: mergeKeyedRecord(defaults.events, saved.events),
+    events: mergeEventsState(saved.events),
     minigames: mergeKeyedRecord(defaults.minigames, saved.minigames),
     decorations: mergeKeyedRecord(defaults.decorations, saved.decorations),
   };
@@ -263,7 +263,7 @@ export function createValleySaveFromLegacyFlatSave(data: {
   quests: Record<string, Quest>;
   animals: Record<string, Animal>;
   restoration: Record<string, RestorationProject>;
-  events: Record<string, Event>;
+  events: unknown;
   minigames: Record<string, MiniGame>;
   decorations: Record<string, Decoration>;
 }): ValleySaveData {
@@ -283,7 +283,7 @@ export function createValleySaveFromLegacyFlatSave(data: {
     animals,
     animalSpecies: mergeAnimalSpeciesState(undefined, animals),
     restoration: mergeRestorationState(data.restoration),
-    events: mergeKeyedRecord(defaults.events, data.events),
+    events: mergeEventsState(data.events),
     minigames: mergeKeyedRecord(defaults.minigames, data.minigames),
     decorations: mergeKeyedRecord(defaults.decorations, data.decorations),
   };

@@ -3,7 +3,7 @@ import type {
   AnimalSpeciesId,
   AnimalSpeciesProgress,
   Decoration,
-  Event,
+  EventsState,
   GameUser,
   InventoryItem,
   MiniGame,
@@ -39,7 +39,7 @@ export interface GameState {
   animals: Record<string, Animal>;
   animalSpecies: Record<AnimalSpeciesId, AnimalSpeciesProgress>;
   restoration: Record<string, RestorationProject>;
-  events: Record<string, Event>;
+  events: EventsState;
   minigames: Record<string, MiniGame>;
   decorations: Record<string, Decoration>;
   isHydrated: boolean;
