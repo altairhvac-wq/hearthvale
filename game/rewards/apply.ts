@@ -6,19 +6,23 @@ import { tryGetSkillDefinition } from "@/game/skills";
 import type { GameReward, ItemId, ResourceId, SkillId } from "@/types";
 import type { UnlockReference } from "@/types";
 
+export interface GameRewardCallbacks {
+  awardResource: (resourceId: ResourceId, amount: number) => void;
+  awardSkillXp: (skillId: SkillId, amount: number) => void;
+  applyUnlock: (unlock: UnlockReference) => void;
+  awardItem: (itemId: ItemId, amount: number) => void;
+  awardProsperity: (amount: number) => void;
+  awardReputation: (amount: number) => void;
+}
+
 export interface GameRewardApplicationResult {
   rewards: GameReward[];
   skillXpAwarded: Array<{ skillId: SkillId; amount: number }>;
   resourcesAwarded: Array<{ resourceId: ResourceId; amount: number }>;
   itemsAwarded: Array<{ itemId: ItemId; amount: number }>;
   unlocksApplied: UnlockReference[];
-}
-
-export interface GameRewardCallbacks {
-  awardResource: (resourceId: ResourceId, amount: number) => void;
-  awardSkillXp: (skillId: SkillId, amount: number) => void;
-  applyUnlock: (unlock: UnlockReference) => void;
-  awardItem: (itemId: ItemId, amount: number) => void;
+  prosperityAwarded: number;
+  reputationAwarded: number;
 }
 
 export function describeGameReward(reward: GameReward): string {
@@ -39,6 +43,10 @@ export function describeGameReward(reward: GameReward): string {
       return describeUnlockReward(reward.unlock);
     case "item":
       return `${reward.amount} item`;
+    case "prosperity":
+      return `${reward.amount} Prosperity`;
+    case "reputation":
+      return `${reward.amount} Reputation`;
   }
 }
 
@@ -71,6 +79,8 @@ export function applyGameRewards(
     resourcesAwarded: [],
     itemsAwarded: [],
     unlocksApplied: [],
+    prosperityAwarded: 0,
+    reputationAwarded: 0,
   };
 
   for (const reward of rewards) {
@@ -99,6 +109,14 @@ export function applyGameRewards(
           itemId: reward.itemId,
           amount: reward.amount,
         });
+        break;
+      case "prosperity":
+        callbacks.awardProsperity(reward.amount);
+        result.prosperityAwarded += reward.amount;
+        break;
+      case "reputation":
+        callbacks.awardReputation(reward.amount);
+        result.reputationAwarded += reward.amount;
         break;
     }
   }

@@ -16,3 +16,7 @@ export * from "./skill";
 export * from "./save";
 export * from "./unlock-requirement";
 export * from "./resource";
+export * from "./merchant";
+export * from "./prosperity";
+export * from "./request";
+export * from "./reputation";

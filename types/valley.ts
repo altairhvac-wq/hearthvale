@@ -6,6 +6,10 @@ import type { InventoryItem } from "./inventory";
 import type { MiniGame } from "./minigame";
 import type { Quest } from "./quest";
 import type { Region } from "./region";
+import type { MerchantState } from "./merchant";
+import type { ProsperityState } from "./prosperity";
+import type { RequestsState } from "./request";
+import type { ReputationState } from "./reputation";
 import type { RestorationProject } from "./restoration";
 
 /** Who someone is within a valley — not an auth account. */
@@ -47,6 +51,10 @@ export interface ValleyGameplayState {
   events: EventsState;
   minigames: Record<string, MiniGame>;
   decorations: Record<string, Decoration>;
+  merchant: MerchantState;
+  prosperity: ProsperityState;
+  requests: RequestsState;
+  reputation: ReputationState;
 }
 
 /** Persisted valley record — metadata plus scoped gameplay. */

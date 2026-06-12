@@ -18,6 +18,9 @@ export type MiniGameId = Brand<string, "MiniGameId">;
 export type DecorationId = Brand<string, "DecorationId">;
 export type RestorationProjectId = Brand<string, "RestorationProjectId">;
 export type UnlockId = Brand<string, "UnlockId">;
+export type MerchantStageId = Brand<string, "MerchantStageId">;
+export type CustomerRequestId = Brand<string, "CustomerRequestId">;
+export type ProsperityTierId = Brand<string, "ProsperityTierId">;
 
 const ID_PATTERN = /^[a-z][a-z0-9_]*$/;
 

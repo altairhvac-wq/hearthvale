@@ -96,6 +96,26 @@ export function AnimalIcon({ className = "h-5 w-5" }: IconProps) {
   );
 }
 
+export function MerchantIcon({ className = "h-5 w-5" }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <path
+        d="M4 9h16l-1.2 10.5H5.2L4 9Z"
+        className="stroke-current"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M3 9 5 4.5h14L21 9"
+        className="stroke-current"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path d="M9 14h6" className="stroke-current" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function InventoryIcon({ className = "h-5 w-5" }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">

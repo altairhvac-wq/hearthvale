@@ -3,7 +3,11 @@ import { DEFAULT_USER_ID, DEFAULT_VALLEY_ID, DEFAULT_VALLEY_NAME } from "@/game/
 import { createInitialDecorationsState } from "@/game/decorations";
 import { createInitialEventsState } from "@/game/events";
 import { createInitialMiniGamesState } from "@/game/minigames";
+import { createInitialMerchantState } from "@/game/merchant";
+import { createInitialProsperityState } from "@/game/prosperity";
 import { createInitialQuestsState } from "@/game/quests";
+import { createInitialRequestsState } from "@/game/requests";
+import { createInitialReputationState } from "@/game/reputation";
 import { createInitialRegionsState } from "@/game/regions";
 import { createInitialRestorationState } from "@/game/restoration";
 import { FOUNDATION_EPOCH } from "@/game/constants/foundation";
@@ -41,6 +45,10 @@ export function createInitialValleyGameplayState(): ValleyGameplayState {
     events: createInitialEventsState(),
     minigames: createInitialMiniGamesState(),
     decorations: createInitialDecorationsState(),
+    merchant: createInitialMerchantState(),
+    prosperity: createInitialProsperityState(),
+    requests: createInitialRequestsState(),
+    reputation: createInitialReputationState(),
   };
 }
 

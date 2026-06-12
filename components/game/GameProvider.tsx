@@ -32,6 +32,7 @@ export function GameProvider({ children }: GameProviderProps) {
     state.refreshRestorationAvailability();
     state.refreshAnimalAvailability();
     state.refreshMiniGameAvailability();
+    state.refreshMerchantSystems();
 
     persist();
 

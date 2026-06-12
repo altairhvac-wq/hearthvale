@@ -101,6 +101,7 @@ export function createAnimalsSlice(set: SetState, get: GetState): AnimalsSlice {
         get().syncActiveQuestObjectives();
         get().refreshQuestAvailability();
         animalService.refreshAnimalAvailability();
+        get().refreshMerchantSystems();
       },
     },
   );

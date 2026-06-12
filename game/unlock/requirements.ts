@@ -33,6 +33,14 @@ export function isUnlockRequirementMet(
       }
       return region.state === "unlocked" || region.state === "restored";
     }
+    case "merchant_stage": {
+      const stage = context.merchant?.stages[requirement.stageId];
+      return (stage?.level ?? 0) >= requirement.minLevel;
+    }
+    case "prosperity_tier": {
+      const tier = context.getProsperityTier?.() ?? 0;
+      return tier >= requirement.minTier;
+    }
   }
 }
 

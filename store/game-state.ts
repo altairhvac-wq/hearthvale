@@ -6,11 +6,15 @@ import type {
   EventsState,
   GameUser,
   InventoryItem,
+  MerchantState,
   MiniGame,
   Player,
+  ProsperityState,
   Quest,
   Region,
   RegionId,
+  RequestsState,
+  ReputationState,
   RestorationProject,
   SkillProgress,
   Valley,
@@ -42,6 +46,10 @@ export interface GameState {
   events: EventsState;
   minigames: Record<string, MiniGame>;
   decorations: Record<string, Decoration>;
+  merchant: MerchantState;
+  prosperity: ProsperityState;
+  requests: RequestsState;
+  reputation: ReputationState;
   isHydrated: boolean;
   isSaving: boolean;
   lastSavedAt: string | null;

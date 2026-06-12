@@ -17,6 +17,10 @@ import { mergeQuestsState } from "@/game/quests/state";
 import { mergeRestorationState, syncRegionsWithRestorationState } from "@/game/restoration/state";
 import { mergeEventsState } from "@/game/events/state";
 import { mergeMiniGamesState } from "@/game/minigames/state";
+import { mergeMerchantState } from "@/game/merchant/state";
+import { mergeProsperityState } from "@/game/prosperity/state";
+import { mergeRequestsState } from "@/game/requests/state";
+import { mergeReputationState } from "@/game/reputation/state";
 import {
   mergeKeyedRecord,
   mergePlainRecord,
@@ -61,6 +65,10 @@ function applyValleyGameplayToState(
   | "events"
   | "minigames"
   | "decorations"
+  | "merchant"
+  | "prosperity"
+  | "requests"
+  | "reputation"
 > {
   return {
     activeRegionId: gameplay.activeRegionId,
@@ -72,6 +80,10 @@ function applyValleyGameplayToState(
     events: gameplay.events,
     minigames: gameplay.minigames,
     decorations: gameplay.decorations,
+    merchant: gameplay.merchant,
+    prosperity: gameplay.prosperity,
+    requests: gameplay.requests,
+    reputation: gameplay.reputation,
   };
 }
 
@@ -111,6 +123,10 @@ function mergeValleySaveData(
     events: mergeEventsState(saved.events),
     minigames: mergeMiniGamesState(saved.minigames),
     decorations: mergeKeyedRecord(defaults.decorations, saved.decorations),
+    merchant: mergeMerchantState(saved.merchant),
+    prosperity: mergeProsperityState(saved.prosperity),
+    requests: mergeRequestsState(saved.requests),
+    reputation: mergeReputationState(saved.reputation),
   };
 }
 
@@ -171,6 +187,10 @@ export function buildStateForValleySwitch(
   | "events"
   | "minigames"
   | "decorations"
+  | "merchant"
+  | "prosperity"
+  | "requests"
+  | "reputation"
 > | null {
   const valleys = syncActiveValleyIntoValleys(state);
   const savedValley = valleys[valleyId];
@@ -287,6 +307,10 @@ export function createValleySaveFromLegacyFlatSave(data: {
     events: mergeEventsState(data.events),
     minigames: mergeMiniGamesState(data.minigames),
     decorations: mergeKeyedRecord(defaults.decorations, data.decorations),
+    merchant: mergeMerchantState(undefined),
+    prosperity: mergeProsperityState(undefined),
+    requests: mergeRequestsState(undefined),
+    reputation: mergeReputationState(undefined),
   };
 }
 

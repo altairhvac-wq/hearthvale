@@ -10,6 +10,10 @@ import type {
 import { isPersistedAnimalRecord, isPersistedAnimalSpeciesRecord } from "@/game/animals/validation";
 import { isPersistedEventsState } from "@/game/events/validation";
 import { isPersistedMiniGamesRecord } from "@/game/minigames/validation";
+import { isPersistedMerchantState } from "@/game/merchant/validation";
+import { isPersistedProsperityState } from "@/game/prosperity/validation";
+import { isPersistedRequestsState } from "@/game/requests/validation";
+import { isPersistedReputationState } from "@/game/reputation/validation";
 
 const VALLEY_ROLES: readonly ValleyRole[] = ["owner", "member", "visitor"];
 
@@ -217,7 +221,11 @@ function isValleySaveData(value: unknown): boolean {
     isRestorationRecord(value.restoration) &&
     isPersistedEventsState(value.events) &&
     isPersistedMiniGamesRecord(value.minigames) &&
-    isRecord(value.decorations)
+    isRecord(value.decorations) &&
+    isPersistedMerchantState(value.merchant) &&
+    isPersistedProsperityState(value.prosperity) &&
+    isPersistedRequestsState(value.requests) &&
+    isPersistedReputationState(value.reputation)
   );
 }
 

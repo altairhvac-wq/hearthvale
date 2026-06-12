@@ -1,6 +1,10 @@
 import { DEFAULT_USER_ID, DEFAULT_VALLEY_ID } from "@/game/constants/valley";
 import { createInitialMembershipsState } from "@/game/valley";
-import type { Player, RegionId } from "@/types";
+import { createInitialMerchantState } from "@/game/merchant/state";
+import { createInitialProsperityState } from "@/game/prosperity/state";
+import { createInitialRequestsState } from "@/game/requests/state";
+import { createInitialReputationState } from "@/game/reputation/state";
+import type { Player, RegionId, ValleySaveData } from "@/types";
 import {
   createUserFromLegacyPlayer,
   createValleySaveFromLegacyFlatSave,
@@ -24,6 +28,27 @@ function asKeyedRecord<T>(value: unknown): Record<string, T> {
   }
 
   return {};
+}
+
+function migrateValleyToV4(valley: ValleySaveData): ValleySaveData {
+  return {
+    ...valley,
+    merchant: valley.merchant ?? createInitialMerchantState(),
+    prosperity: valley.prosperity ?? createInitialProsperityState(),
+    requests: valley.requests ?? createInitialRequestsState(),
+    reputation: valley.reputation ?? createInitialReputationState(),
+  };
+}
+
+function migrateValleysToV4(
+  valleys: Record<string, ValleySaveData>,
+): Record<string, ValleySaveData> {
+  return Object.fromEntries(
+    Object.entries(valleys).map(([valleyId, valley]) => [
+      valleyId,
+      migrateValleyToV4(valley),
+    ]),
+  );
 }
 
 export const SAVE_MIGRATIONS: SaveMigration[] = [
@@ -79,6 +104,19 @@ export const SAVE_MIGRATIONS: SaveMigration[] = [
         memberships: createInitialMembershipsState(player.lastPlayedAt),
         pendingInvites: {},
         visitSessions: {},
+      };
+    },
+  },
+  {
+    fromVersion: 3,
+    toVersion: 4,
+    migrate(data) {
+      const valleys = asKeyedRecord<ValleySaveData>(data.valleys);
+
+      return {
+        ...data,
+        version: 4,
+        valleys: migrateValleysToV4(valleys),
       };
     },
   },

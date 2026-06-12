@@ -21,6 +21,10 @@ export const PERSISTABLE_STATE_KEYS = [
   "events",
   "minigames",
   "decorations",
+  "merchant",
+  "prosperity",
+  "requests",
+  "reputation",
 ] as const;
 
 export type PersistableStateKey = (typeof PERSISTABLE_STATE_KEYS)[number];
@@ -48,6 +52,10 @@ export function pickPersistableState(state: GameState): PersistableState {
     events: state.events,
     minigames: state.minigames,
     decorations: state.decorations,
+    merchant: state.merchant,
+    prosperity: state.prosperity,
+    requests: state.requests,
+    reputation: state.reputation,
   };
 }
 

@@ -18,6 +18,10 @@ export const VALLEY_GAMEPLAY_STATE_KEYS = [
   "events",
   "minigames",
   "decorations",
+  "merchant",
+  "prosperity",
+  "requests",
+  "reputation",
 ] as const;
 
 export type ValleyGameplayStateKey = (typeof VALLEY_GAMEPLAY_STATE_KEYS)[number];
@@ -38,6 +42,10 @@ export function pickActiveValleyGameplay(state: GameState): ValleyGameplayState 
     events: state.events,
     minigames: state.minigames,
     decorations: state.decorations,
+    merchant: state.merchant,
+    prosperity: state.prosperity,
+    requests: state.requests,
+    reputation: state.reputation,
   };
 }
 
@@ -64,6 +72,10 @@ export function extractValleyGameplay(
     events: valleySave.events,
     minigames: valleySave.minigames,
     decorations: valleySave.decorations,
+    merchant: valleySave.merchant,
+    prosperity: valleySave.prosperity,
+    requests: valleySave.requests,
+    reputation: valleySave.reputation,
   };
 }
 

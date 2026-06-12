@@ -107,6 +107,14 @@ export function createStoreGameRewardCallbacks(
       void itemId;
       void amount;
     },
+
+    awardProsperity(amount: number) {
+      get().awardProsperityBonus(amount);
+    },
+
+    awardReputation(amount: number) {
+      get().awardReputation(amount);
+    },
   };
 }
 

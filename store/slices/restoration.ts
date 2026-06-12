@@ -102,6 +102,7 @@ export function createRestorationSlice(
         get().syncActiveQuestObjectives();
         get().refreshQuestAvailability();
         restorationService.refreshRestorationAvailability();
+        get().refreshMerchantSystems();
       },
     },
     () => get().user.id,

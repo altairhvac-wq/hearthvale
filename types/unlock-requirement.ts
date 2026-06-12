@@ -1,5 +1,6 @@
 import type { AnimalSpeciesId } from "./animal";
 import type {
+  MerchantStageId,
   QuestId,
   RegionId,
   RestorationProjectId,
@@ -11,7 +12,9 @@ export type UnlockRequirement =
   | { kind: "quest_completed"; questId: QuestId }
   | { kind: "restoration_completed"; projectId: RestorationProjectId }
   | { kind: "skill_level"; skillId: SkillId; level: number }
-  | { kind: "region_state"; regionId: RegionId; state: "unlocked" | "restored" };
+  | { kind: "region_state"; regionId: RegionId; state: "unlocked" | "restored" }
+  | { kind: "merchant_stage"; stageId: MerchantStageId; minLevel: number }
+  | { kind: "prosperity_tier"; minTier: number };
 
 /** Structured reward unlock — replaces opaque string keys. */
 export type UnlockReference =

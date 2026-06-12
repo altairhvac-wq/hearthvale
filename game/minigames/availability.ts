@@ -28,6 +28,8 @@ function isMiniGameGateMet(
     case "restoration_completed":
     case "skill_level":
     case "region_state":
+    case "merchant_stage":
+    case "prosperity_tier":
       return isUnlockRequirementMet(gate, context);
     case "event_completed": {
       const instance = context.events.instances[gate.eventId];

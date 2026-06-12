@@ -21,8 +21,9 @@ import { createAnimalsSlice, type AnimalsSlice } from "./slices/animals";
 import { createRestorationSlice, type RestorationSlice } from "./slices/restoration";
 import { createEventsSlice, type EventsSlice } from "./slices/events";
 import { createMiniGamesSlice, type MiniGamesSlice } from "./slices/minigames";
+import { createMerchantSlice, type MerchantSlice } from "./slices/merchant";
 
-export interface GameStore extends GameState, SkillsSlice, RegionsSlice, QuestsSlice, RestorationSlice, AnimalsSlice, EventsSlice, MiniGamesSlice {
+export interface GameStore extends GameState, SkillsSlice, RegionsSlice, QuestsSlice, RestorationSlice, AnimalsSlice, EventsSlice, MiniGamesSlice, MerchantSlice {
   hydrate: () => void;
   persist: () => boolean;
   resetGame: () => void;
@@ -73,6 +74,7 @@ export const useGameStore = create<GameStore>()(
     ...createAnimalsSlice(set, get),
     ...createEventsSlice(set, get),
     ...createMiniGamesSlice(set, get),
+    ...createMerchantSlice(set, get),
 
     hydrate() {
       const saved = loadGameSave();
@@ -153,6 +155,7 @@ export const useGameStore = create<GameStore>()(
       set(nextState);
       get().refreshQuestAvailability();
       get().refreshMiniGameAvailability();
+      get().refreshMerchantSystems();
       return true;
     },
   })),

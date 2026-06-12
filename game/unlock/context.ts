@@ -1,4 +1,5 @@
 import type {
+  MerchantState,
   Quest,
   Region,
   RestorationProject,
@@ -12,4 +13,6 @@ export interface UnlockEvaluationContext {
   regions: Record<string, Region>;
   restoration: Record<string, RestorationProject>;
   getSkillLevel: (skillId: SkillId) => number;
+  merchant?: MerchantState;
+  getProsperityTier?: () => number;
 }

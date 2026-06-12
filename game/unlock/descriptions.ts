@@ -1,4 +1,6 @@
 import { QUEST_DEFINITIONS } from "@/game/constants/quests";
+import { getMerchantStageDefinition } from "@/game/constants/merchant";
+import { getProsperityTierByLevel } from "@/game/constants/prosperity";
 import { tryGetSkillDefinition } from "@/game/skills";
 import { getRegionDefinitionName } from "@/game/regions/state";
 import type { UnlockRequirement } from "@/types";
@@ -25,6 +27,16 @@ export function describeUnlockRequirement(
       return requirement.state === "restored"
         ? `Fully restore ${regionLabel}`
         : `Unlock ${regionLabel}`;
+    }
+    case "merchant_stage": {
+      const stage = getMerchantStageDefinition(requirement.stageId);
+      return stage
+        ? `Upgrade ${stage.title} to level ${requirement.minLevel}`
+        : "Upgrade your merchant business";
+    }
+    case "prosperity_tier": {
+      const tier = getProsperityTierByLevel(requirement.minTier);
+      return `Reach prosperity tier: ${tier.title}`;
     }
   }
 }
