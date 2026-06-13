@@ -1,6 +1,7 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useMemo, useSyncExternalStore } from "react";
+import { useShallow } from "zustand/react/shallow";
 import { computePlayerLevelInfo } from "@/game/player/level";
 import { getCoreResourceDisplay } from "@/game/player/resources";
 import { useGameStore, type GameStore } from "./game-store";
@@ -35,25 +36,42 @@ export function useIsGameHydrated(): boolean {
 /**
  * Read store state only after hydration completes.
  * Returns `undefined` while loading — gate UI before rendering gameplay data.
+ *
+ * Selectors must return stable references (primitives or existing store slices).
+ * For derived view models, use `useIsGameHydrated` with `useShallow` and `useMemo`.
  */
 export function useHydratedGameStore<T>(
   selector: HydratedSelector<T>,
 ): T | undefined {
   const isHydrated = useIsGameHydrated();
+  const selected = useGameStore(selector);
 
-  return useGameStore((state) => {
-    if (!isHydrated) {
-      return undefined as T | undefined;
-    }
+  if (!isHydrated) {
+    return undefined;
+  }
 
-    return selector(state);
-  });
+  return selected;
 }
 
 export function usePlayerHeaderData() {
-  return useHydratedGameStore((state) => ({
-    displayName: state.player.displayName,
-    resources: getCoreResourceDisplay(state.player.resources),
-    levelInfo: computePlayerLevelInfo(state.skills),
-  }));
+  const isHydrated = useIsGameHydrated();
+  const headerSource = useGameStore(
+    useShallow((state) => ({
+      displayName: state.player.displayName,
+      resources: state.player.resources,
+      skills: state.skills,
+    })),
+  );
+
+  return useMemo(() => {
+    if (!isHydrated) {
+      return undefined;
+    }
+
+    return {
+      displayName: headerSource.displayName,
+      resources: getCoreResourceDisplay(headerSource.resources),
+      levelInfo: computePlayerLevelInfo(headerSource.skills),
+    };
+  }, [isHydrated, headerSource]);
 }

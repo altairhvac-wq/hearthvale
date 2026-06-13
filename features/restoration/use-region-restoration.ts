@@ -1,25 +1,35 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
+import { useShallow } from "zustand/react/shallow";
 import type { RegionId, RestorationProjectId } from "@/types";
 import { buildRegionRestorationViewModels } from "@/game/restoration/view-model";
-import {
-  useHydratedGameStore,
-  useIsGameHydrated,
-  useGameStore,
-} from "@/store";
+import { useIsGameHydrated, useGameStore } from "@/store";
 
 export function useRegionRestoration(regionId: RegionId) {
-  return useHydratedGameStore((state) =>
-    buildRegionRestorationViewModels(regionId, state.restoration, {
+  const isHydrated = useIsGameHydrated();
+  const contextSource = useGameStore(
+    useShallow((state) => ({
       quests: state.quests,
       skills: state.skills,
       regions: state.regions,
       restoration: state.restoration,
       getSkillLevel: state.getSkillLevel,
       playerResources: state.player.resources,
-    }),
+    })),
   );
+
+  return useMemo(() => {
+    if (!isHydrated) {
+      return undefined;
+    }
+
+    return buildRegionRestorationViewModels(
+      regionId,
+      contextSource.restoration,
+      contextSource,
+    );
+  }, [isHydrated, regionId, contextSource]);
 }
 
 export function useStartRestorationProject() {

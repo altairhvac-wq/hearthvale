@@ -1,10 +1,20 @@
 "use client";
 
-import { useGameStore, useHydratedGameStore } from "@/store";
+import { useMemo } from "react";
+import { useGameStore, useIsGameHydrated } from "@/store";
 import { buildFestivalCartData } from "@/game/events/view-model";
 
 export function useFestivalCartData() {
-  return useHydratedGameStore((state) => buildFestivalCartData(state.events));
+  const isHydrated = useIsGameHydrated();
+  const events = useGameStore((state) => state.events);
+
+  return useMemo(() => {
+    if (!isHydrated) {
+      return undefined;
+    }
+
+    return buildFestivalCartData(events);
+  }, [isHydrated, events]);
 }
 
 export function useRefreshEventScheduler() {

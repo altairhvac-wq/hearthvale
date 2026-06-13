@@ -1,18 +1,40 @@
 "use client";
 
+import { useMemo } from "react";
+import { useShallow } from "zustand/react/shallow";
 import { buildValleyMapData } from "@/game/regions/view-model";
-import { useGameStore, useHydratedGameStore } from "@/store";
+import { useGameStore, useIsGameHydrated } from "@/store";
 
 export function useValleyMapData() {
-  return useHydratedGameStore((state) =>
-    buildValleyMapData(state.activeRegionId, state.regions, {
+  const isHydrated = useIsGameHydrated();
+  const mapContextSource = useGameStore(
+    useShallow((state) => ({
+      activeRegionId: state.activeRegionId,
+      regions: state.regions,
       quests: state.quests,
       skills: state.skills,
-      regions: state.regions,
       restoration: state.restoration,
       getSkillLevel: state.getSkillLevel,
-    }),
+    })),
   );
+
+  return useMemo(() => {
+    if (!isHydrated) {
+      return undefined;
+    }
+
+    return buildValleyMapData(
+      mapContextSource.activeRegionId,
+      mapContextSource.regions,
+      {
+        quests: mapContextSource.quests,
+        skills: mapContextSource.skills,
+        regions: mapContextSource.regions,
+        restoration: mapContextSource.restoration,
+        getSkillLevel: mapContextSource.getSkillLevel,
+      },
+    );
+  }, [isHydrated, mapContextSource]);
 }
 
 export function useSetActiveRegion() {
