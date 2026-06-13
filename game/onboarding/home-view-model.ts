@@ -1,4 +1,6 @@
 import {
+  buildActiveRequestObjectiveCopy,
+  buildFirstSessionStatusNarrative,
   FIRST_SESSION_MOOD,
   FIRST_SESSION_OBJECTIVE,
   FUTURE_GOAL_PREVIEWS,
@@ -7,11 +9,13 @@ import {
   type VillageStoryCopy,
 } from "@/game/constants/immersion";
 import { QUEST_IDS } from "@/game/constants/quests";
-import { CUSTOMER_REQUEST_IDS } from "@/game/constants/requests";
+import { CUSTOMER_REQUEST_IDS, getCustomerRequestDefinition } from "@/game/constants/requests";
 import { MERCHANT_STAGE_IDS } from "@/game/constants/merchant";
+import { CHARACTER_DEFINITIONS, CHARACTER_IDS } from "@/game/constants/world";
+import { resolveCharacterDialogue } from "@/game/world/dialogue";
 import type { MerchantScreenData } from "@/game/merchant/view-model";
 import type { ProsperityViewModel } from "@/game/prosperity/view-model";
-import type { Quest } from "@/types";
+import type { CharacterId, Quest, RequestsState } from "@/types";
 import { isFirstSession, isWelcomeQuestComplete } from "./first-session";
 
 export interface HomeObjectiveViewModel {
@@ -62,17 +66,20 @@ function buildObjectiveForFirstSession(): HomeObjectiveViewModel {
 
 function buildObjectiveForActiveRequest(
   customerName: string,
-  requestTitle: string,
   hasMissingItems: boolean,
+  customerLine?: string,
 ): HomeObjectiveViewModel {
+  const copy = buildActiveRequestObjectiveCopy({
+    customerName,
+    requestTitle: "",
+    hasMissingItems,
+    customerLine,
+  });
+
   return {
-    title: hasMissingItems ? "Gather what Elena needs" : "Deliver the bouquet",
-    description: hasMissingItems
-      ? `${customerName} is waiting for wildflowers. Head to the meadow and fill your pack.`
-      : `You have what ${customerName} needs. Return to your Market Stand and complete the delivery.`,
-    steps: hasMissingItems
-      ? ["Gather wildflowers in the meadow", "Return to your Market Stand"]
-      : ["Deliver the bouquet at your Market Stand"],
+    title: copy.title,
+    description: copy.description,
+    steps: copy.steps,
     primaryAction: hasMissingItems
       ? { label: "Go gather", href: "/gather" }
       : { label: "Deliver at stand", href: "/merchant" },
@@ -96,6 +103,26 @@ function buildObjectiveForPostWelcome(): HomeObjectiveViewModel {
     secondaryAction: { label: "Explore the map", href: "/" },
     isHighlighted: false,
   };
+}
+
+function resolveRequestCharacterId(requestId: string): CharacterId | null {
+  const definition = getCustomerRequestDefinition(
+    requestId as (typeof CUSTOMER_REQUEST_IDS)[keyof typeof CUSTOMER_REQUEST_IDS],
+  );
+
+  if (definition?.characterId) {
+    return definition.characterId;
+  }
+
+  if (!definition) {
+    return null;
+  }
+
+  const match = CHARACTER_DEFINITIONS.find(
+    (character) => character.name === definition.customerName,
+  );
+
+  return match?.id ?? null;
 }
 
 function resolveNextUnlock(merchantData: MerchantScreenData): FutureGoalPreview {
@@ -131,10 +158,15 @@ export function buildHomeImmersionViewModel(input: {
   totalXp: number;
   merchantData: MerchantScreenData;
   prosperity: ProsperityViewModel;
+  requests: RequestsState;
 }): HomeImmersionViewModel {
-  const { quests, totalXp, merchantData, prosperity } = input;
+  const { quests, totalXp, merchantData, prosperity, requests } = input;
   const firstSession = isFirstSession(quests, totalXp);
   const welcomeComplete = isWelcomeQuestComplete(quests);
+
+  const elenaDialogue = resolveCharacterDialogue(CHARACTER_IDS.ELENA, {
+    requests,
+  });
 
   const elenaRequest =
     merchantData.activeRequests.find((r) => r.id === CUSTOMER_REQUEST_IDS.WILDFLOWERS) ??
@@ -146,8 +178,8 @@ export function buildHomeImmersionViewModel(input: {
     if (elenaRequest?.status === "active") {
       currentObjective = buildObjectiveForActiveRequest(
         elenaRequest.customerName,
-        elenaRequest.title,
         elenaRequest.hasMissingItems,
+        elenaDialogue?.text,
       );
     } else {
       currentObjective = buildObjectiveForFirstSession();
@@ -156,10 +188,14 @@ export function buildHomeImmersionViewModel(input: {
     currentObjective = buildObjectiveForFirstSession();
   } else if (merchantData.activeRequests.length > 0) {
     const active = merchantData.activeRequests[0]!;
+    const characterId = resolveRequestCharacterId(active.id);
+    const dialogue = characterId
+      ? resolveCharacterDialogue(characterId, { requests })?.text
+      : undefined;
     currentObjective = buildObjectiveForActiveRequest(
       active.customerName,
-      active.title,
       active.hasMissingItems,
+      dialogue,
     );
   } else {
     currentObjective = buildObjectiveForPostWelcome();
@@ -167,6 +203,13 @@ export function buildHomeImmersionViewModel(input: {
 
   const pendingCustomer =
     merchantData.availableRequests[0] ?? merchantData.activeRequests[0];
+
+  const pendingCharacterId = pendingCustomer
+    ? resolveRequestCharacterId(pendingCustomer.id)
+    : null;
+  const pendingDialogue = pendingCharacterId
+    ? resolveCharacterDialogue(pendingCharacterId, { requests })
+    : null;
 
   const marketStand: HomeMarketStandViewModel = {
     title: merchantData.activeStage.title,
@@ -180,8 +223,8 @@ export function buildHomeImmersionViewModel(input: {
     href: "/merchant",
     hasPendingCustomer: Boolean(pendingCustomer),
     customerLine: pendingCustomer
-      ? firstSession
-        ? `"Could you find wildflowers for my windowsill?" — ${pendingCustomer.customerName}`
+      ? pendingDialogue
+        ? `"${pendingDialogue.text}" — ${pendingCustomer.customerName}`
         : `${pendingCustomer.customerName} is looking for ${pendingCustomer.title.toLowerCase()}.`
       : undefined,
   };
@@ -197,7 +240,7 @@ export function buildHomeImmersionViewModel(input: {
     villageStatus: {
       moodTitle: firstSession ? FIRST_SESSION_MOOD : prosperity.tierTitle,
       narrative: firstSession
-        ? "The square is still, but your stall waits — and Elena left her request on the counter."
+        ? buildFirstSessionStatusNarrative(requests)
         : prosperity.tierDescription,
     },
     currentObjective,

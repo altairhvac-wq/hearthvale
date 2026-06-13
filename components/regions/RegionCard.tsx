@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import type { RegionViewModel } from "@/game/regions/view-model";
-import { REGION_ATMOSPHERE } from "@/game/constants/immersion";
-import { getRegionProgressPresentation } from "@/game/regions/presentation";
+import { REGION_CARD_LABELS } from "@/game/constants/world/labels";
 import { getRegionProgressFill } from "@/components/theme/region-styles";
+import { WorldScenePanel } from "@/components/world";
 import { LockIcon, RegionIcon } from "@/components/icons/GameIcons";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { getRegionThemeStyle } from "@/components/theme/region-styles";
@@ -26,11 +26,8 @@ export function RegionCard({
 }: RegionCardProps) {
   const theme = getRegionThemeStyle(region.theme);
   const isLocked = region.displayStatus === "locked";
-  const progress = getRegionProgressPresentation(region.displayStatus);
-  const atmosphere = REGION_ATMOSPHERE[region.id];
-  const displayDescription = compact
-    ? atmosphere?.tagline ?? region.description
-    : region.description;
+  const worldScene = region.worldScene;
+  const progressLabel = worldScene?.progressNarrative ?? REGION_CARD_LABELS.defaultProgress;
 
   const body = (
     <>
@@ -53,45 +50,64 @@ export function RegionCard({
             <RegionStatusBadge status={region.displayStatus} />
             {region.isActive ? (
               <span className="rounded-full bg-emerald-600 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
-                Here
+                {REGION_CARD_LABELS.here}
               </span>
             ) : null}
             {!region.isOnMap ? (
               <span className="rounded-full bg-stone-100 px-2 py-0.5 text-[10px] font-medium text-stone-500">
-                Off map
+                {REGION_CARD_LABELS.offMap}
               </span>
             ) : null}
           </div>
 
-          <p
-            className={`mt-1 leading-relaxed text-stone-600 ${
-              compact ? "text-xs italic" : "text-xs sm:text-sm"
-            }`}
-          >
-            {displayDescription}
-          </p>
+          {worldScene && compact ? (
+            <p className="mt-1 text-xs italic leading-relaxed text-stone-500">
+              {worldScene.subtitle}
+            </p>
+          ) : null}
 
-          {!compact && atmosphere ? (
-            <p className="mt-1 text-[10px] font-medium text-stone-400">
-              {atmosphere.moodLabel}
+          {!worldScene ? (
+            <p
+              className={`mt-1 leading-relaxed text-stone-600 ${
+                compact ? "text-xs italic" : "text-xs sm:text-sm"
+              }`}
+            >
+              {region.description}
             </p>
           ) : null}
         </div>
       </div>
 
+      {worldScene ? (
+        <WorldScenePanel scene={worldScene} compact={compact} className="mt-3" />
+      ) : null}
+
       {!isLocked ? (
-        <ProgressBar
-          className="mt-3"
-          value={region.progressPercent}
-          label={progress.label}
-          fillClassName={getRegionProgressFill(progress.variant)}
-        />
+        <div className="mt-3 opacity-80">
+          <ProgressBar
+            value={region.progressPercent}
+            label={progressLabel}
+            showPercent={false}
+            fillClassName={getRegionProgressFill(
+              region.displayStatus === "in_progress"
+                ? "restoration"
+                : region.displayStatus === "restored"
+                  ? "complete"
+                  : "discovery",
+            )}
+          />
+          {worldScene?.progressWhisper ? (
+            <p className="mt-1 text-[10px] italic text-stone-400">
+              {worldScene.progressWhisper}
+            </p>
+          ) : null}
+        </div>
       ) : null}
 
       {region.showUnlockRequirement ? (
         <div className="mt-3 rounded-xl border border-dashed border-stone-200/80 bg-stone-50/60 px-3 py-2">
           <p className="text-[10px] font-medium uppercase tracking-wide text-stone-400">
-            To reach this place
+            {REGION_CARD_LABELS.toReachThisPlace}
           </p>
           <p className="mt-0.5 text-xs text-stone-600">
             {region.unlockRequirementDescription}

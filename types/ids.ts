@@ -24,6 +24,10 @@ export type ProsperityTierId = Brand<string, "ProsperityTierId">;
 export type GatherableResourceId = Brand<string, "GatherableResourceId">;
 export type ResourceNodeId = Brand<string, "ResourceNodeId">;
 export type ToolTypeId = Brand<string, "ToolTypeId">;
+export type LocationId = Brand<string, "LocationId">;
+export type CharacterId = Brand<string, "CharacterId">;
+export type DialogueId = Brand<string, "DialogueId">;
+export type DiscoveryLocationId = Brand<string, "DiscoveryLocationId">;
 
 const ID_PATTERN = /^[a-z][a-z0-9_]*$/;
 

@@ -13,6 +13,10 @@ function buildCustomerLine(request: CustomerRequestViewModel): string {
     return `${request.customerName} will visit when your stand grows.`;
   }
 
+  if (request.characterLine && request.status !== "completed") {
+    return `"${request.characterLine}"`;
+  }
+
   const itemLabels = request.requiredResources
     .map((resource) => resource.label.toLowerCase())
     .join(" and ");

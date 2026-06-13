@@ -17,6 +17,7 @@ import { ValleyEventIndicator } from "@/components/events/ValleyEventIndicator";
 import { RegionCard } from "@/components/regions/RegionCard";
 import { RegionMapCanvas } from "@/components/regions/RegionMapCanvas";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { HOME_SCREEN_LABELS } from "@/game/constants/world/labels";
 import {
   useIsGameHydrated,
   usePlayerHeaderData,
@@ -102,11 +103,11 @@ export function ValleyMapScreen() {
         displayName={headerData.displayName}
         isNewPlayer={headerData.isNewPlayer}
         title="Hearthvale"
-        subtitle="A valley waiting to bloom again"
+        subtitle={HOME_SCREEN_LABELS.subtitle}
       >
         <EmptyState
-          title="The valley is quiet"
-          description="No paths are open yet — but your journey will begin here soon."
+          title={HOME_SCREEN_LABELS.emptyTitle}
+          description={HOME_SCREEN_LABELS.emptyDescription}
         />
       </GameShell>
     );
@@ -118,6 +119,12 @@ export function ValleyMapScreen() {
   const selectedRegion =
     mapData.regions.find((region) => region.id === activeSelection) ?? null;
 
+  const featuredRegion =
+    selectedRegion ??
+    mapData.regions.find((region) => region.isActive) ??
+    mapData.regions[0] ??
+    null;
+
   return (
     <GameShell
       resources={headerData.resources}
@@ -125,7 +132,7 @@ export function ValleyMapScreen() {
       displayName={headerData.displayName}
       isNewPlayer={headerData.isNewPlayer}
       title="Hearthvale"
-      subtitle="A valley waiting to bloom again"
+      subtitle={HOME_SCREEN_LABELS.subtitle}
     >
       <section className="space-y-5">
         <VillageStoryPanel
@@ -134,9 +141,63 @@ export function ValleyMapScreen() {
           showFullStory={immersionData.showVillageStory}
         />
 
-        <CurrentObjectivePanel objective={immersionData.currentObjective} />
+        <div>
+          <div className="mb-2 flex items-end justify-between gap-2">
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-emerald-700/80">
+                {HOME_SCREEN_LABELS.valleyEyebrow}
+              </p>
+              <h2 className="text-base font-semibold text-stone-800 sm:text-lg">
+                {immersionData.isFirstSession
+                  ? HOME_SCREEN_LABELS.firstSessionMapTitle
+                  : HOME_SCREEN_LABELS.returningMapTitle}
+              </h2>
+            </div>
+            {!immersionData.isFirstSession ? (
+              <Link
+                href="/gather"
+                className="shrink-0 text-xs font-medium text-emerald-700 underline decoration-emerald-300/60 underline-offset-2"
+              >
+                Go gather
+              </Link>
+            ) : null}
+          </div>
 
-        <MarketStandSpotlight marketStand={immersionData.marketStand} />
+          <RegionMapCanvas
+            regions={mapData.regions}
+            connections={mapData.connections}
+            selectedRegionId={activeSelection}
+            onSelectRegion={handleSelectRegion}
+            eventRegionIds={eventRegionIds}
+          />
+        </div>
+
+        {featuredRegion ? (
+          <RegionCard
+            region={featuredRegion}
+            onSelect={handleSelectRegion}
+            footer={
+              !immersionData.isFirstSession ? (
+                <>
+                  {eventIndicatorByRegion.get(featuredRegion.id) ? (
+                    <div className="mb-3">
+                      <ValleyEventIndicator
+                        indicator={eventIndicatorByRegion.get(featuredRegion.id)!}
+                      />
+                    </div>
+                  ) : null}
+                  <RegionRestorationFooter regionId={featuredRegion.id} />
+                </>
+              ) : undefined
+            }
+          />
+        ) : null}
+
+        <div className="space-y-4 border-t border-stone-200/50 pt-4">
+          <CurrentObjectivePanel objective={immersionData.currentObjective} />
+
+          <MarketStandSpotlight marketStand={immersionData.marketStand} />
+        </div>
 
         <FutureUnlocksPanel
           nextUnlock={immersionData.nextUnlock}
@@ -159,64 +220,14 @@ export function ValleyMapScreen() {
           />
         ) : null}
 
-        <div>
-          <div className="mb-2 flex items-end justify-between gap-2">
-            <div>
-              <p className="text-[11px] font-medium uppercase tracking-wide text-emerald-700/80">
-                The valley
-              </p>
-              <h2 className="text-sm font-semibold text-stone-800">
-                {immersionData.isFirstSession
-                  ? "Paths waiting to be walked"
-                  : "Places waiting for you"}
-              </h2>
-            </div>
-            {!immersionData.isFirstSession ? (
-              <Link
-                href="/gather"
-                className="shrink-0 text-xs font-medium text-emerald-700 underline decoration-emerald-300/60 underline-offset-2"
-              >
-                Go gather
-              </Link>
-            ) : null}
-          </div>
-
-          <RegionMapCanvas
-            regions={mapData.regions}
-            connections={mapData.connections}
-            selectedRegionId={activeSelection}
-            onSelectRegion={handleSelectRegion}
-            eventRegionIds={eventRegionIds}
-          />
-        </div>
-
-        {selectedRegion && !immersionData.isFirstSession ? (
-          <RegionCard
-            region={selectedRegion}
-            onSelect={handleSelectRegion}
-            footer={
-              <>
-                {eventIndicatorByRegion.get(selectedRegion.id) ? (
-                  <div className="mb-3">
-                    <ValleyEventIndicator
-                      indicator={eventIndicatorByRegion.get(selectedRegion.id)!}
-                    />
-                  </div>
-                ) : null}
-                <RegionRestorationFooter regionId={selectedRegion.id} />
-              </>
-            }
-          />
-        ) : null}
-
         {!immersionData.isFirstSession ? (
           <div className="space-y-3">
             <div>
               <p className="text-[11px] font-medium uppercase tracking-wide text-stone-400">
-                Explore
+                {HOME_SCREEN_LABELS.exploreEyebrow}
               </p>
               <h2 className="text-sm font-semibold text-stone-700">
-                Walk the valley paths
+                {HOME_SCREEN_LABELS.exploreTitle}
               </h2>
             </div>
 
@@ -254,8 +265,7 @@ export function ValleyMapScreen() {
         !festivalCartData.isVisible &&
         !festivalCartData.isWaitingForCart ? (
           <p className="rounded-2xl border border-stone-200/50 bg-stone-50/60 px-3 py-2.5 text-center text-xs italic text-stone-500">
-            The valley is peaceful today — wander the paths and listen for the
-            Festival Cart&apos;s bells.
+            {HOME_SCREEN_LABELS.peacefulDay}
           </p>
         ) : null}
       </section>

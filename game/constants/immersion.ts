@@ -1,5 +1,14 @@
-import { REGION_IDS } from "./regions";
-import type { RegionId } from "@/types";
+import {
+  CHARACTER_DEFINITIONS,
+  CHARACTER_IDS,
+  DISCOVERY_LOCATION_DEFINITIONS,
+  DISCOVERY_LOCATION_IDS,
+  LOCATION_DEFINITIONS,
+  LOCATION_IDS,
+} from "./world";
+import { resolveCharacterDialogue } from "@/game/world/dialogue";
+import type { HomeObjectiveViewModel } from "@/game/onboarding/home-view-model";
+import type { RequestsState } from "@/types";
 
 /** Cozy narrative copy for the home screen and first session. */
 export interface VillageStoryCopy {
@@ -38,75 +47,95 @@ export interface FutureGoalPreview {
   isMystery?: boolean;
 }
 
+function getLocationById(locationId: (typeof LOCATION_IDS)[keyof typeof LOCATION_IDS]) {
+  return LOCATION_DEFINITIONS.find((entry) => entry.id === locationId);
+}
+
+function getCharacterById(characterId: (typeof CHARACTER_IDS)[keyof typeof CHARACTER_IDS]) {
+  return CHARACTER_DEFINITIONS.find((entry) => entry.id === characterId);
+}
+
+function getDiscoveryById(
+  discoveryId: (typeof DISCOVERY_LOCATION_IDS)[keyof typeof DISCOVERY_LOCATION_IDS],
+) {
+  return DISCOVERY_LOCATION_DEFINITIONS.find((entry) => entry.id === discoveryId);
+}
+
+const sanctuaryLocation = getLocationById(LOCATION_IDS.ANIMAL_SANCTUARY)!;
+const harborLocation = getLocationById(LOCATION_IDS.HARBOR)!;
+const willow = getCharacterById(CHARACTER_IDS.WILLOW)!;
+const beyondHarbor = getDiscoveryById(DISCOVERY_LOCATION_IDS.BEYOND_HARBOR)!;
+
 export const FUTURE_GOAL_PREVIEWS: readonly FutureGoalPreview[] = [
   {
     id: "sanctuary",
-    title: "The Animal Sanctuary",
-    teaser: "The old sanctuary has fallen silent — gentle souls wait to return.",
-    iconEmoji: "🦊",
+    title: sanctuaryLocation.title,
+    teaser: sanctuaryLocation.restorationDream,
+    iconEmoji: willow.portrait.fallbackEmoji,
   },
   {
     id: "village_shop",
     title: "A Village Shop",
-    teaser: "One day your humble stall may grow into a cozy corner shop the whole square trusts.",
+    teaser:
+      "One day your humble stall may grow into a cozy corner shop the whole square trusts.",
     iconEmoji: "🏪",
   },
   {
     id: "harbor",
-    title: "The Harbor",
-    teaser: "The harbor has seen better days — distant horizons still call.",
+    title: harborLocation.title,
+    teaser: harborLocation.restorationDream,
     iconEmoji: "⚓",
   },
   {
     id: "islands",
-    title: "Misty Shores",
-    teaser: "Beyond the dock, islands drift in the fog — secrets yet unseen.",
+    title: beyondHarbor.label,
+    teaser: beyondHarbor.teaser,
     iconEmoji: "🏝️",
     isMystery: true,
   },
 ] as const;
 
-export interface RegionAtmosphere {
-  tagline: string;
-  moodLabel: string;
+/** Location restoration dreams keyed by region — for panels that need a quick lookup. */
+export function getRestorationDreamForRegion(
+  regionId: (typeof LOCATION_DEFINITIONS)[number]["regionId"],
+): string | null {
+  const location = LOCATION_DEFINITIONS.find((entry) => entry.regionId === regionId);
+  return location?.restorationDream ?? null;
 }
 
-/** Atmospheric copy keyed by region — replaces system-heavy labels in UI. */
-export const REGION_ATMOSPHERE: Record<RegionId, RegionAtmosphere> = {
-  [REGION_IDS.VALLEY]: {
-    tagline: "The meadow still remembers laughter.",
-    moodLabel: "Heart of the valley",
-  },
-  [REGION_IDS.SANCTUARY]: {
-    tagline: "The old sanctuary has fallen silent.",
-    moodLabel: "Waiting for care",
-  },
-  [REGION_IDS.DOCK]: {
-    tagline: "The harbor has seen better days.",
-    moodLabel: "Gateway to the horizon",
-  },
-  [REGION_IDS.FOREST]: {
-    tagline: "The forest path hides forgotten secrets.",
-    moodLabel: "Whispers among the trees",
-  },
-};
+/** First-session mood line when a character request is active. */
+export function buildFirstSessionStatusNarrative(requests: RequestsState): string {
+  const elenaLine = resolveCharacterDialogue(CHARACTER_IDS.ELENA, { requests })?.text;
 
-/** Mystery silhouettes placed on the valley map — visual anticipation only. */
-export interface MysteryMapLocation {
-  id: string;
-  label: string;
-  position: { x: number; y: number };
+  if (elenaLine) {
+    return `The square is still, but your stall waits — Elena left her request on the counter: "${elenaLine}"`;
+  }
+
+  return "The square is still, but your stall waits — and someone may stop by soon.";
 }
 
-export const MYSTERY_MAP_LOCATIONS: readonly MysteryMapLocation[] = [
-  {
-    id: "distant_isles",
-    label: "???",
-    position: { x: 92, y: 12 },
-  },
-  {
-    id: "hidden_grove",
-    label: "???",
-    position: { x: 8, y: 14 },
-  },
-] as const;
+/** Objective copy when a registry-linked customer request is in progress. */
+export function buildActiveRequestObjectiveCopy(input: {
+  customerName: string;
+  requestTitle: string;
+  hasMissingItems: boolean;
+  customerLine?: string;
+}): Pick<HomeObjectiveViewModel, "title" | "description" | "steps"> {
+  const { customerName, hasMissingItems, customerLine } = input;
+
+  const description = customerLine
+    ? `${customerName} says: "${customerLine}"`
+    : hasMissingItems
+      ? `${customerName} is waiting. Head to the meadow and fill your pack.`
+      : `You have what ${customerName} needs. Return to your Market Stand and complete the delivery.`;
+
+  return {
+    title: hasMissingItems
+      ? `Gather what ${customerName} needs`
+      : `Deliver for ${customerName}`,
+    description,
+    steps: hasMissingItems
+      ? ["Gather what's needed in the valley", "Return to your Market Stand"]
+      : ["Deliver at your Market Stand"],
+  };
+}

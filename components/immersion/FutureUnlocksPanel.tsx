@@ -1,4 +1,5 @@
 import type { FutureGoalPreview } from "@/game/constants/immersion";
+import { HOME_SCREEN_LABELS } from "@/game/constants/world/labels";
 import { LockIcon } from "@/components/icons/GameIcons";
 
 interface FutureUnlocksPanelProps {
@@ -18,12 +19,14 @@ export function FutureUnlocksPanel({
     <section className="space-y-3">
       <div>
         <p className="text-[11px] font-medium uppercase tracking-wide text-violet-600/90">
-          {compact ? "A whisper on the wind" : "Horizons ahead"}
+          {compact
+            ? HOME_SCREEN_LABELS.futureUnlocksCompactEyebrow
+            : HOME_SCREEN_LABELS.futureUnlocksEyebrow}
         </p>
         <h2 className="mt-0.5 text-sm font-semibold text-stone-800">
           {compact
-            ? "The valley holds more than you can see yet"
-            : "Dreams waiting beyond today's path"}
+            ? HOME_SCREEN_LABELS.futureUnlocksCompactTitle
+            : HOME_SCREEN_LABELS.futureUnlocksTitle}
         </h2>
       </div>
 

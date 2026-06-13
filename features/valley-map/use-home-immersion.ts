@@ -44,6 +44,7 @@ export function useHomeImmersionData() {
       totalXp: levelInfo.totalXp,
       merchantData,
       prosperity: merchantData.prosperity,
+      requests: source.requests,
     });
   }, [isHydrated, source]);
 }

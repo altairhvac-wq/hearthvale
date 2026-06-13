@@ -17,8 +17,11 @@ import {
   type RegionDisplayStatus,
 } from "./display-status";
 import { shouldShowUnlockRequirement } from "./presentation";
+import type { LocationSceneViewModel } from "@/game/world/view-model";
 import type { RegionIconKey } from "@/game/constants/icon-keys";
 import { resolveRegionIconKey } from "@/game/constants/icon-keys";
+import { buildLocationSceneViewModel } from "@/game/world/view-model";
+import type { RequestsState } from "@/types";
 
 export type { UnlockEvaluationContext } from "@/game/unlock/context";
 
@@ -47,6 +50,8 @@ export interface RegionViewModel {
   isOnMap: boolean;
   mapPosition: { x: number; y: number } | null;
   iconKey: RegionIconKey;
+  /** World layer scene — atmosphere, characters, dreams. */
+  worldScene: LocationSceneViewModel | null;
 }
 
 export interface ValleyMapData {
@@ -82,6 +87,7 @@ function buildRegionViewModel(
   runtime: Region,
   activeRegionId: RegionId | null,
   context: UnlockEvaluationContext,
+  requests: RequestsState,
 ): RegionViewModel {
   const displayStatus = deriveRegionDisplayStatus(runtime);
   const mapNode = getValleyMapNode(definition.id);
@@ -92,18 +98,26 @@ function buildRegionViewModel(
   const isUnlockRequirementMetValue = unlockRequirement
     ? isUnlockRequirementMet(unlockRequirement, context)
     : true;
+  const progressPercent = getProgressPercent(runtime, displayStatus);
+
+  const worldScene = buildLocationSceneViewModel(
+    definition.id,
+    displayStatus,
+    progressPercent,
+    { requests },
+  );
 
   return {
     id: definition.id,
-    name: definition.name,
-    description: definition.description,
+    name: worldScene?.title ?? definition.name,
+    description: worldScene?.atmosphereDescription ?? definition.description,
     theme: definition.theme,
     sortOrder: definition.sortOrder,
     displayStatus,
     runtimeState: runtime.state,
     discoveryProgress: runtime.discoveryProgress,
     restorationProgress: runtime.restorationProgress,
-    progressPercent: getProgressPercent(runtime, displayStatus),
+    progressPercent,
     unlockRequirement,
     unlockRequirementDescription,
     isUnlockRequirementMet: isUnlockRequirementMetValue,
@@ -117,6 +131,7 @@ function buildRegionViewModel(
     isOnMap: mapNode !== null,
     mapPosition: mapNode?.position ?? null,
     iconKey: resolveRegionIconKey(mapNode?.iconKey, definition.theme),
+    worldScene,
   };
 }
 
@@ -124,6 +139,7 @@ export function buildValleyMapData(
   activeRegionId: RegionId | null,
   regions: Record<string, Region>,
   context: UnlockEvaluationContext,
+  requests: RequestsState,
 ): ValleyMapData {
   const sortedDefinitions = [...REGION_DEFINITIONS].sort(
     (a, b) => a.sortOrder - b.sortOrder,
@@ -137,7 +153,13 @@ export function buildValleyMapData(
         return null;
       }
 
-      return buildRegionViewModel(definition, runtime, activeRegionId, context);
+      return buildRegionViewModel(
+        definition,
+        runtime,
+        activeRegionId,
+        context,
+        requests,
+      );
     })
     .filter((entry): entry is RegionViewModel => entry !== null);
 

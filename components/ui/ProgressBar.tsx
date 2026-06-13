@@ -5,6 +5,8 @@ interface ProgressBarProps {
   trackClassName?: string;
   fillClassName?: string;
   label?: string;
+  /** When false, hides the numeric percentage — prefer narrative labels. */
+  showPercent?: boolean;
 }
 
 export function ProgressBar({
@@ -14,6 +16,7 @@ export function ProgressBar({
   trackClassName = "bg-stone-200/70",
   fillClassName = "bg-gradient-to-r from-emerald-400 to-teal-500",
   label,
+  showPercent = true,
 }: ProgressBarProps) {
   const clamped = Math.max(0, Math.min(value, max));
   const percent = max > 0 ? (clamped / max) * 100 : 0;
@@ -23,7 +26,9 @@ export function ProgressBar({
       {label ? (
         <div className="mb-1 flex items-center justify-between text-xs text-stone-500">
           <span>{label}</span>
-          <span>{Math.round(clamped)}%</span>
+          {showPercent ? (
+            <span>{Math.round(clamped)}%</span>
+          ) : null}
         </div>
       ) : null}
       <div

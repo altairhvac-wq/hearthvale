@@ -1,6 +1,6 @@
 import type { GameReward } from "./reward";
 import type { UnlockRequirement } from "./unlock-requirement";
-import type { CustomerRequestId, ItemId } from "./ids";
+import type { CharacterId, CustomerRequestId, ItemId } from "./ids";
 
 /** Extensible request categories for future expansion. */
 export type RequestCategory =
@@ -36,6 +36,8 @@ export interface CustomerRequestDefinition {
   description: string;
   category: RequestCategory;
   customerName: string;
+  /** Registry link for dialogue and quest continuity. */
+  characterId?: CharacterId;
   unlockRequirement: UnlockRequirement | null;
   requiredResources: RequestResourceRequirement[];
   rewards: GameReward[];

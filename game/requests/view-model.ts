@@ -4,7 +4,11 @@ import {
   CUSTOMER_REQUEST_DEFINITIONS,
   getCustomerRequestDefinition,
 } from "@/game/constants/requests";
+import { CHARACTER_DEFINITIONS } from "@/game/constants/world";
+import { resolveCharacterDialogue } from "@/game/world/dialogue";
 import type {
+  CharacterId,
+  CustomerRequestDefinition,
   CustomerRequestId,
   CustomerRequestStatus,
   RequestCategory,
@@ -44,6 +48,8 @@ export interface CustomerRequestViewModel {
   canComplete: boolean;
   hasMissingItems: boolean;
   completionBlockedReason: string | null;
+  /** Registry-driven character speech when available. */
+  characterLine: string | null;
 }
 
 function buildCompletionBlockedReason(
@@ -72,6 +78,25 @@ function buildCompletionBlockedReason(
   return `Need more: ${missing
     .map((resource) => `${resource.missing}× ${resource.label}`)
     .join(", ")}`;
+}
+
+function findCharacterIdByName(name: string): CharacterId | null {
+  const match = CHARACTER_DEFINITIONS.find((character) => character.name === name);
+  return match?.id ?? null;
+}
+
+function resolveCustomerCharacterLine(
+  definition: CustomerRequestDefinition,
+  context: RequestEvaluationContext,
+): string | null {
+  const characterId =
+    definition.characterId ?? findCharacterIdByName(definition.customerName);
+
+  if (!characterId) {
+    return null;
+  }
+
+  return resolveCharacterDialogue(characterId, context)?.text ?? null;
 }
 
 function buildRequestViewModel(
@@ -110,6 +135,7 @@ function buildRequestViewModel(
   });
   const hasMissingItems = requiredResources.some((resource) => !resource.sufficient);
   const canComplete = canCompleteCustomerRequest(definition.id, context);
+  const characterLine = resolveCustomerCharacterLine(definition, context);
 
   return {
     id: definition.id,
@@ -129,6 +155,7 @@ function buildRequestViewModel(
     completionBlockedReason: canComplete
       ? null
       : buildCompletionBlockedReason(requiredResources),
+    characterLine,
   };
 }
 

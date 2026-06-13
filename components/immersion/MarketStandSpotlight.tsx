@@ -1,4 +1,5 @@
 import type { HomeMarketStandViewModel } from "@/game/onboarding/home-view-model";
+import { HOME_SCREEN_LABELS } from "@/game/constants/world/labels";
 import Link from "next/link";
 
 interface MarketStandSpotlightProps {
@@ -20,7 +21,7 @@ export function MarketStandSpotlight({ marketStand }: MarketStandSpotlightProps)
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-[11px] font-medium uppercase tracking-wide text-amber-700/80">
-            Your stand
+            {HOME_SCREEN_LABELS.marketStandEyebrow}
           </p>
           <h2 className="mt-0.5 text-lg font-bold text-stone-900">
             {marketStand.title}
@@ -33,13 +34,13 @@ export function MarketStandSpotlight({ marketStand }: MarketStandSpotlightProps)
           </p>
           {marketStand.hasPendingCustomer && marketStand.customerLine ? (
             <p className="mt-3 rounded-xl border border-amber-200/60 bg-white/70 px-3 py-2 text-xs leading-relaxed text-amber-950/90">
-              <span className="font-semibold">A neighbor asks:</span>{" "}
+              <span className="font-semibold">{HOME_SCREEN_LABELS.neighborAsks}</span>{" "}
               {marketStand.customerLine}
             </p>
           ) : null}
         </div>
         <span className="shrink-0 self-center rounded-full bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors group-hover:bg-amber-700">
-          Visit
+          {HOME_SCREEN_LABELS.visit}
         </span>
       </div>
     </Link>

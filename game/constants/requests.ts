@@ -2,6 +2,7 @@ import { RESOURCE_IDS } from "@/game/constants/resources";
 import { SKILL_IDS } from "@/game/constants/skills";
 import { ITEM_IDS } from "@/game/constants/items";
 import { MERCHANT_STAGE_IDS } from "@/game/constants/merchant";
+import { CHARACTER_IDS } from "@/game/constants/world";
 import {
   createId,
   type CustomerRequestDefinition,
@@ -30,6 +31,7 @@ export const CUSTOMER_REQUEST_DEFINITIONS = [
     description: "Fresh blooms to brighten a windowsill on a grey morning.",
     category: "foraging",
     customerName: "Elena",
+    characterId: CHARACTER_IDS.ELENA,
     unlockRequirement: null,
     requiredResources: [
       {
@@ -76,7 +78,8 @@ export const CUSTOMER_REQUEST_DEFINITIONS = [
     title: "Fresh Catch",
     description: "Grilled fish before the evening ferry — a traveler's last warm meal.",
     category: "fishing",
-    customerName: "Rowan",
+    customerName: "Captain Rowan",
+    characterId: CHARACTER_IDS.CAPTAIN_ROWAN,
     unlockRequirement: {
       kind: "merchant_stage",
       stageId: MERCHANT_STAGE_IDS.MARKET_STAND,

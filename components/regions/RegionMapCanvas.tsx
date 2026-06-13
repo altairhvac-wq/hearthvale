@@ -4,10 +4,8 @@ import type {
   MapConnectionViewModel,
   RegionViewModel,
 } from "@/game/regions/view-model";
-import {
-  MYSTERY_MAP_LOCATIONS,
-  REGION_ATMOSPHERE,
-} from "@/game/constants/immersion";
+import { buildDiscoveryLocationViewModels } from "@/game/world/view-model";
+import { REGION_MAP_LABELS } from "@/game/constants/world/labels";
 import { getRegionDisplayStatusLabel } from "@/game/regions/display-status";
 import { LockIcon, RegionIcon } from "@/components/icons/GameIcons";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -38,12 +36,13 @@ export function RegionMapCanvas({
   className = "",
 }: RegionMapCanvasProps) {
   const positionedRegions = regions.filter((region) => region.isOnMap);
+  const discoveryLocations = buildDiscoveryLocationViewModels();
 
   if (positionedRegions.length === 0) {
     return (
       <EmptyState
-        title="Map unavailable"
-        description="No regions have map positions yet. They will still appear in the list below."
+        title={REGION_MAP_LABELS.mapUnavailableTitle}
+        description={REGION_MAP_LABELS.mapUnavailableDescription}
         className={className}
       />
     );
@@ -102,7 +101,7 @@ export function RegionMapCanvas({
         const isSelected = selectedRegionId === region.id;
         const position = region.mapPosition;
         const statusLabel = getRegionDisplayStatusLabel(region.displayStatus);
-        const atmosphere = REGION_ATMOSPHERE[region.id];
+        const subtitle = region.worldScene?.subtitle;
 
         if (!position) {
           return null;
@@ -148,14 +147,14 @@ export function RegionMapCanvas({
               >
                 {region.name}
               </span>
-              {atmosphere && !isLocked ? (
+              {subtitle && !isLocked ? (
                 <span className="max-w-[6rem] truncate text-[9px] italic text-stone-500/90 sm:max-w-[7rem]">
-                  {atmosphere.moodLabel}
+                  {subtitle}
                 </span>
               ) : null}
               {region.isActive ? (
                 <span className="rounded-full bg-emerald-600 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
-                  You
+                  {REGION_MAP_LABELS.youAreHere}
                 </span>
               ) : null}
             </div>
@@ -163,18 +162,21 @@ export function RegionMapCanvas({
         );
       })}
 
-      {MYSTERY_MAP_LOCATIONS.map((location) => (
+      {discoveryLocations.map((location) => (
         <div
           key={location.id}
           className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 opacity-45"
           style={{ left: `${location.position.x}%`, top: `${location.position.y}%` }}
+          title={location.teaser}
           aria-hidden
         >
           <div className="flex flex-col items-center gap-1">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-stone-300/40 ring-2 ring-white/50 shadow-sm backdrop-blur-sm sm:h-11 sm:w-11">
-              <span className="text-lg text-stone-500/70">?</span>
+              <span className="text-lg text-stone-500/70">
+                {location.label === "???" ? "?" : "🌫️"}
+              </span>
             </div>
-            <span className="rounded-full bg-stone-400/30 px-2 py-0.5 text-[9px] font-medium text-stone-500/80 backdrop-blur-sm">
+            <span className="max-w-[5rem] truncate rounded-full bg-stone-400/30 px-2 py-0.5 text-[9px] font-medium text-stone-500/80 backdrop-blur-sm">
               {location.label}
             </span>
           </div>

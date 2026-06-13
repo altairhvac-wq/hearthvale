@@ -1,4 +1,5 @@
 import type { HomeObjectiveViewModel } from "@/game/onboarding/home-view-model";
+import { HOME_SCREEN_LABELS } from "@/game/constants/world/labels";
 import Link from "next/link";
 
 interface CurrentObjectivePanelProps {
@@ -16,7 +17,7 @@ export function CurrentObjectivePanel({ objective }: CurrentObjectivePanelProps)
       aria-labelledby="current-objective-title"
     >
       <p className="text-[11px] font-medium uppercase tracking-wide text-amber-700/90">
-        Your next step
+        {HOME_SCREEN_LABELS.currentObjectiveEyebrow}
       </p>
       <h2
         id="current-objective-title"
@@ -29,15 +30,23 @@ export function CurrentObjectivePanel({ objective }: CurrentObjectivePanelProps)
       </p>
 
       {objective.steps.length > 0 ? (
-        <ol className="mt-4 space-y-2">
+        <ol
+          className={`mt-4 space-y-2 ${
+            objective.isHighlighted ? "" : "list-none pl-0"
+          }`}
+        >
           {objective.steps.map((step, index) => (
             <li
               key={step}
               className="flex items-start gap-2.5 text-sm text-stone-700"
             >
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-200/80 text-[11px] font-bold text-amber-900">
-                {index + 1}
-              </span>
+              {objective.isHighlighted ? (
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-200/80 text-[11px] font-bold text-amber-900">
+                  {index + 1}
+                </span>
+              ) : (
+                <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-stone-300" />
+              )}
               <span className="pt-0.5 leading-snug">{step}</span>
             </li>
           ))}

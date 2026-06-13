@@ -1,4 +1,5 @@
 import type { Region } from "@/types";
+import { REGION_STATUS_LABELS } from "@/game/constants/world/labels";
 
 /** Player-facing region status for map and cards. */
 export type RegionDisplayStatus =
@@ -28,14 +29,5 @@ export function deriveRegionDisplayStatus(region: Region): RegionDisplayStatus {
 }
 
 export function getRegionDisplayStatusLabel(status: RegionDisplayStatus): string {
-  switch (status) {
-    case "locked":
-      return "Distant";
-    case "available":
-      return "Waiting";
-    case "in_progress":
-      return "Needs care";
-    case "restored":
-      return "Thriving";
-  }
+  return REGION_STATUS_LABELS[status];
 }

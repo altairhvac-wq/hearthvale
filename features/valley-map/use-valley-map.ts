@@ -14,6 +14,7 @@ export function useValleyMapData() {
       quests: state.quests,
       skills: state.skills,
       restoration: state.restoration,
+      requests: state.requests,
       getSkillLevel: state.getSkillLevel,
     })),
   );
@@ -33,6 +34,7 @@ export function useValleyMapData() {
         restoration: mapContextSource.restoration,
         getSkillLevel: mapContextSource.getSkillLevel,
       },
+      mapContextSource.requests,
     );
   }, [isHydrated, mapContextSource]);
 }
