@@ -30,12 +30,12 @@ export function deriveRegionDisplayStatus(region: Region): RegionDisplayStatus {
 export function getRegionDisplayStatusLabel(status: RegionDisplayStatus): string {
   switch (status) {
     case "locked":
-      return "Locked";
+      return "Distant";
     case "available":
-      return "Available";
+      return "Waiting";
     case "in_progress":
-      return "In Progress";
+      return "Needs care";
     case "restored":
-      return "Restored";
+      return "Thriving";
   }
 }

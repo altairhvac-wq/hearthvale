@@ -4,9 +4,13 @@ import { ResourceIcon } from "@/components/icons/GameIcons";
 interface ResourceBarProps {
   resources: ResourceDisplayItem[];
   className?: string;
+  hidden?: boolean;
 }
 
-export function ResourceBar({ resources, className = "" }: ResourceBarProps) {
+export function ResourceBar({ resources, className = "", hidden = false }: ResourceBarProps) {
+  if (hidden) {
+    return null;
+  }
   return (
     <div
       className={`flex items-center justify-center gap-2 sm:gap-3 ${className}`}

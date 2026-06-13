@@ -27,7 +27,7 @@ export const CUSTOMER_REQUEST_DEFINITIONS = [
   {
     id: CUSTOMER_REQUEST_IDS.WILDFLOWERS,
     title: "Wildflower Bouquet",
-    description: "A villager wants fresh wildflowers to brighten their windowsill.",
+    description: "Fresh blooms to brighten a windowsill on a grey morning.",
     category: "foraging",
     customerName: "Elena",
     unlockRequirement: null,
@@ -48,7 +48,7 @@ export const CUSTOMER_REQUEST_DEFINITIONS = [
   {
     id: CUSTOMER_REQUEST_IDS.BERRIES,
     title: "Berry Basket",
-    description: "The baker needs ripe berries for tomorrow's tarts.",
+    description: "Ripe berries for tomorrow's tarts — the baker is counting on you.",
     category: "foraging",
     customerName: "Milo",
     unlockRequirement: {
@@ -74,7 +74,7 @@ export const CUSTOMER_REQUEST_DEFINITIONS = [
   {
     id: CUSTOMER_REQUEST_IDS.FISH,
     title: "Fresh Catch",
-    description: "A traveler craves grilled fish before the evening ferry departs.",
+    description: "Grilled fish before the evening ferry — a traveler's last warm meal.",
     category: "fishing",
     customerName: "Rowan",
     unlockRequirement: {

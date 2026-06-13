@@ -12,9 +12,9 @@ export type CoreRegionId = (typeof REGION_IDS)[keyof typeof REGION_IDS];
 export const REGION_DEFINITIONS = [
   {
     id: REGION_IDS.VALLEY,
-    name: "Valley",
+    name: "Valley Meadow",
     description:
-      "The heart of Hearthvale — a gentle meadow waiting to bloom again.",
+      "The meadow still remembers laughter — wildflowers bloom where footsteps return.",
     theme: "meadow",
     sortOrder: 0,
     unlockRequirement: null,
@@ -23,16 +23,16 @@ export const REGION_DEFINITIONS = [
     id: REGION_IDS.SANCTUARY,
     name: "Animal Sanctuary",
     description:
-      "A quiet refuge where animals gather and trust is earned slowly.",
+      "The old sanctuary has fallen silent. Gentle souls wait for someone patient enough to earn their trust.",
     theme: "sanctuary",
     sortOrder: 1,
     unlockRequirement: null,
   },
   {
     id: REGION_IDS.DOCK,
-    name: "Dock",
+    name: "Weathered Harbor",
     description:
-      "Weathered planks and distant horizons — the gateway to exploration.",
+      "The harbor has seen better days. Weathered planks creak, but distant horizons still call.",
     theme: "harbor",
     sortOrder: 2,
     unlockRequirement: null,
@@ -41,7 +41,7 @@ export const REGION_DEFINITIONS = [
     id: REGION_IDS.FOREST,
     name: "Forest Path",
     description:
-      "Ancient trees hold secrets, forage, and paths yet to be cleared.",
+      "The forest path hides forgotten secrets — ancient trees, wild forage, and trails yet to be cleared.",
     theme: "forest",
     sortOrder: 3,
     unlockRequirement: null,

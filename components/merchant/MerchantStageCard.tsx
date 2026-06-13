@@ -11,13 +11,13 @@ interface MerchantStageCardProps {
 function statusLabel(status: string): string {
   switch (status) {
     case "locked":
-      return "Locked";
+      return "Not yet";
     case "available":
       return "Ready to open";
     case "active":
-      return "Active";
+      return "Your stand now";
     case "maxed":
-      return "Fully upgraded";
+      return "At its finest";
     default:
       return status;
   }

@@ -23,7 +23,7 @@ export function InventoryScreen() {
       levelInfo={headerData.levelInfo}
       displayName={headerData.displayName}
       isNewPlayer={headerData.isNewPlayer}
-      title="Inventory"
+      title="Pack"
       subtitle="Everything you've gathered and the tools you carry"
     >
       <div className="space-y-5 pb-4">

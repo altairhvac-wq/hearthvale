@@ -14,10 +14,10 @@ export interface RegionProgressPresentation {
 
 const PROGRESS_BY_STATUS: Record<RegionDisplayStatus, RegionProgressPresentation> =
   {
-    locked: { label: "Discovery", variant: "locked" },
-    available: { label: "Discovery", variant: "discovery" },
-    in_progress: { label: "Restoration", variant: "restoration" },
-    restored: { label: "Complete", variant: "complete" },
+    locked: { label: "Still hidden", variant: "locked" },
+    available: { label: "Ready to explore", variant: "discovery" },
+    in_progress: { label: "Help restore this place", variant: "restoration" },
+    restored: { label: "Brought back to life", variant: "complete" },
   };
 
 export function getRegionProgressPresentation(

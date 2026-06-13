@@ -57,7 +57,11 @@ export function RestorationProjectPanel({
         <ProgressBar
           className="mt-3"
           value={project.progressPercent}
-          label={`Restoration · ${project.completedStages}/${project.totalStages} stages`}
+          label={
+            project.status === "available"
+              ? "Ready to begin restoring"
+              : `Restoring · ${project.completedStages} of ${project.totalStages} steps done`
+          }
           fillClassName="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-amber-400"
         />
       ) : null}
@@ -69,7 +73,7 @@ export function RestorationProjectPanel({
         >
           <ProgressBar
             value={100}
-            label="Fully restored"
+            label="Fully restored — this place shines again"
             fillClassName="bg-gradient-to-r from-emerald-400 via-teal-400 to-sky-400"
           />
           <p className="mt-2 text-center text-xs text-emerald-700/90">
@@ -81,7 +85,7 @@ export function RestorationProjectPanel({
       {project.status === "locked" && project.unlockRequirementDescription ? (
         <div className="mt-3 rounded-xl border border-dashed border-violet-200/70 bg-white/60 px-3 py-2">
           <p className="text-[10px] font-medium uppercase tracking-wide text-violet-400">
-            How to unlock
+            When you&apos;re ready
           </p>
           <p className="mt-0.5 text-xs text-stone-600">
             {project.unlockRequirementDescription}
@@ -92,7 +96,7 @@ export function RestorationProjectPanel({
       {showStageDetails && project.currentStageLabel ? (
         <div className="mt-3 rounded-xl bg-white/70 px-3 py-2.5 ring-1 ring-violet-100/80">
           <p className="text-[10px] font-semibold uppercase tracking-wide text-violet-500">
-            {project.status === "available" ? "First stage" : "Current stage"}
+            {project.status === "available" ? "First step" : "Working on"}
           </p>
           <p className="mt-0.5 text-sm font-medium text-stone-800">
             {project.currentStageLabel}
@@ -148,7 +152,7 @@ export function RestorationProjectPanel({
               disabled={!project.canRestore}
               className="w-full rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition enabled:hover:from-emerald-600 enabled:hover:to-teal-600 enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {project.canRestore ? "Restore" : "Gather Requirements"}
+              {project.canRestore ? "Help restore" : "Gather what's needed"}
             </button>
           ) : null}
         </div>

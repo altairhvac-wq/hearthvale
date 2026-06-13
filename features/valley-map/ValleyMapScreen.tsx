@@ -5,6 +5,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { RegionId } from "@/types";
 import { GameShell } from "@/components/game/GameShell";
 import { GameLoadingState } from "@/components/game/GameLoadingState";
+import {
+  CurrentObjectivePanel,
+  FutureUnlocksPanel,
+  MarketStandSpotlight,
+  VillageStoryPanel,
+} from "@/components/immersion";
 import { FestivalCartPanel } from "@/components/events/FestivalCartPanel";
 import { ValleyEventBanner } from "@/components/events/ValleyEventIndicator";
 import { ValleyEventIndicator } from "@/components/events/ValleyEventIndicator";
@@ -22,11 +28,13 @@ import {
   useFestivalCartData,
   useRefreshEventScheduler,
 } from "@/features/festival-cart";
+import { useHomeImmersionData } from "./use-home-immersion";
 import { useSetActiveRegion, useValleyMapData } from "./use-valley-map";
 
 export function ValleyMapScreen() {
   const isHydrated = useIsGameHydrated();
   const mapData = useValleyMapData();
+  const immersionData = useHomeImmersionData();
   const festivalCartData = useFestivalCartData();
   const headerData = usePlayerHeaderData();
   const setActiveRegionId = useSetActiveRegion();
@@ -67,7 +75,13 @@ export function ValleyMapScreen() {
     completeFeaturedEvent();
   }, [completeFeaturedEvent]);
 
-  if (!isHydrated || !mapData || !headerData || !festivalCartData) {
+  if (
+    !isHydrated ||
+    !mapData ||
+    !headerData ||
+    !festivalCartData ||
+    !immersionData
+  ) {
     return <GameLoadingState />;
   }
 
@@ -88,11 +102,11 @@ export function ValleyMapScreen() {
         displayName={headerData.displayName}
         isNewPlayer={headerData.isNewPlayer}
         title="Hearthvale"
-        subtitle="A cozy valley waiting for your gentle touch"
+        subtitle="A valley waiting to bloom again"
       >
         <EmptyState
           title="The valley is quiet"
-          description="No regions are available yet. Your journey will begin here once the world awakens."
+          description="No paths are open yet — but your journey will begin here soon."
         />
       </GameShell>
     );
@@ -111,85 +125,72 @@ export function ValleyMapScreen() {
       displayName={headerData.displayName}
       isNewPlayer={headerData.isNewPlayer}
       title="Hearthvale"
-      subtitle="A cozy valley waiting for your gentle touch"
+      subtitle="A valley waiting to bloom again"
     >
       <section className="space-y-5">
-        {headerData.isNewPlayer ? (
-          <div className="rounded-2xl border border-amber-200/70 bg-gradient-to-br from-amber-50/95 via-orange-50/60 to-rose-50/50 p-4 shadow-sm">
-            <p className="text-sm font-semibold text-amber-950">
-              Your first steps
-            </p>
-            <p className="mt-1.5 text-xs leading-relaxed text-amber-900/85">
-              Hearthvale is a gentle valley you help restore through trade,
-              gathering, and care. Start at your{" "}
-              <span className="font-medium">Market Stand</span> — accept
-              Elena&apos;s wildflower request, gather blooms in the meadow, then
-              deliver the bouquet.
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <Link
-                href="/merchant"
-                className="rounded-full bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-amber-700"
-              >
-                Visit Market Stand
-              </Link>
-              <Link
-                href="/gather"
-                className="rounded-full border border-amber-300/80 bg-white/80 px-3 py-1.5 text-xs font-medium text-amber-900 transition-colors hover:bg-white"
-              >
-                Go gather
-              </Link>
-            </div>
-          </div>
-        ) : null}
+        <VillageStoryPanel
+          story={immersionData.villageStory}
+          villageStatus={immersionData.villageStatus}
+          showFullStory={immersionData.showVillageStory}
+        />
 
-        {festivalCartData.isVisible && festivalCartData.featuredEvent ? (
+        <CurrentObjectivePanel objective={immersionData.currentObjective} />
+
+        <MarketStandSpotlight marketStand={immersionData.marketStand} />
+
+        <FutureUnlocksPanel
+          nextUnlock={immersionData.nextUnlock}
+          futureGoals={immersionData.futureGoals}
+          compact={immersionData.isFirstSession}
+        />
+
+        {!immersionData.isFirstSession && festivalCartData.isVisible && festivalCartData.featuredEvent ? (
           <ValleyEventBanner
             eventTitle={festivalCartData.featuredEvent.title}
             rarityLabel={festivalCartData.featuredEvent.rarityLabel}
           />
         ) : null}
 
-        <FestivalCartPanel
-          data={festivalCartData}
-          onActivate={handleActivateEvent}
-          onComplete={handleCompleteEvent}
-        />
-
-        <Link
-          href="/gather"
-          className="flex items-center justify-between gap-3 rounded-2xl border border-emerald-200/70 bg-gradient-to-r from-emerald-50/90 to-amber-50/80 px-4 py-3.5 shadow-sm transition-colors hover:from-emerald-100/90 hover:to-amber-100/80"
-        >
-          <div>
-            <p className="text-sm font-semibold text-emerald-900">
-              Explore & Gather
-            </p>
-            <p className="mt-0.5 text-xs text-emerald-800/75">
-              Gather wildflowers and berries for merchant requests and
-              restoration projects
-            </p>
-          </div>
-          <span className="shrink-0 rounded-full bg-emerald-600 px-3 py-1 text-xs font-semibold text-white">
-            Gather
-          </span>
-        </Link>
-
-        {!festivalCartData.isVisible && !festivalCartData.isWaitingForCart ? (
-          <p className="rounded-2xl border border-stone-200/70 bg-stone-50/80 px-3 py-2.5 text-center text-xs text-stone-500">
-            The valley is peaceful — explore regions and check back for the
-            Festival Cart.
-          </p>
+        {!immersionData.isFirstSession ? (
+          <FestivalCartPanel
+            data={festivalCartData}
+            onActivate={handleActivateEvent}
+            onComplete={handleCompleteEvent}
+          />
         ) : null}
 
-        <RegionMapCanvas
-          regions={mapData.regions}
-          connections={mapData.connections}
-          selectedRegionId={activeSelection}
-          onSelectRegion={handleSelectRegion}
-          eventRegionIds={eventRegionIds}
-        />
+        <div>
+          <div className="mb-2 flex items-end justify-between gap-2">
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-emerald-700/80">
+                The valley
+              </p>
+              <h2 className="text-sm font-semibold text-stone-800">
+                {immersionData.isFirstSession
+                  ? "Paths waiting to be walked"
+                  : "Places waiting for you"}
+              </h2>
+            </div>
+            {!immersionData.isFirstSession ? (
+              <Link
+                href="/gather"
+                className="shrink-0 text-xs font-medium text-emerald-700 underline decoration-emerald-300/60 underline-offset-2"
+              >
+                Go gather
+              </Link>
+            ) : null}
+          </div>
 
-        {selectedRegion ? (
+          <RegionMapCanvas
+            regions={mapData.regions}
+            connections={mapData.connections}
+            selectedRegionId={activeSelection}
+            onSelectRegion={handleSelectRegion}
+            eventRegionIds={eventRegionIds}
+          />
+        </div>
+
+        {selectedRegion && !immersionData.isFirstSession ? (
           <RegionCard
             region={selectedRegion}
             onSelect={handleSelectRegion}
@@ -208,44 +209,55 @@ export function ValleyMapScreen() {
           />
         ) : null}
 
-        <div className="space-y-3">
-          <div className="flex items-center justify-between gap-2">
-            <h2 className="text-sm font-semibold text-stone-700">
-              Valley Regions
-            </h2>
-            <span className="shrink-0 text-xs text-stone-400">
-              {mapData.reachableCount} of {mapData.regions.length} reachable
-            </span>
-          </div>
+        {!immersionData.isFirstSession ? (
+          <div className="space-y-3">
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-stone-400">
+                Explore
+              </p>
+              <h2 className="text-sm font-semibold text-stone-700">
+                Walk the valley paths
+              </h2>
+            </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            {mapData.regions.map((region) => (
-              <RegionCard
-                key={region.id}
-                region={region}
-                compact
-                onSelect={handleSelectRegion}
-                footer={
-                  <>
-                    {eventIndicatorByRegion.get(region.id) ? (
-                      <div className="mb-3">
-                        <ValleyEventIndicator
-                          indicator={eventIndicatorByRegion.get(region.id)!}
-                        />
-                      </div>
-                    ) : null}
-                    <RegionRestorationFooter regionId={region.id} compact />
-                  </>
-                }
-                className={
-                  region.id === activeSelection
-                    ? "ring-2 ring-emerald-300/60"
-                    : ""
-                }
-              />
-            ))}
+            <div className="grid gap-3 sm:grid-cols-2">
+              {mapData.regions.map((region) => (
+                <RegionCard
+                  key={region.id}
+                  region={region}
+                  compact
+                  onSelect={handleSelectRegion}
+                  footer={
+                    <>
+                      {eventIndicatorByRegion.get(region.id) ? (
+                        <div className="mb-3">
+                          <ValleyEventIndicator
+                            indicator={eventIndicatorByRegion.get(region.id)!}
+                          />
+                        </div>
+                      ) : null}
+                      <RegionRestorationFooter regionId={region.id} compact />
+                    </>
+                  }
+                  className={
+                    region.id === activeSelection
+                      ? "ring-2 ring-emerald-300/60"
+                      : ""
+                  }
+                />
+              ))}
+            </div>
           </div>
-        </div>
+        ) : null}
+
+        {!immersionData.isFirstSession &&
+        !festivalCartData.isVisible &&
+        !festivalCartData.isWaitingForCart ? (
+          <p className="rounded-2xl border border-stone-200/50 bg-stone-50/60 px-3 py-2.5 text-center text-xs italic text-stone-500">
+            The valley is peaceful today — wander the paths and listen for the
+            Festival Cart&apos;s bells.
+          </p>
+        ) : null}
       </section>
     </GameShell>
   );

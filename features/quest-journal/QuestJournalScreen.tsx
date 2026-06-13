@@ -54,23 +54,25 @@ export function QuestJournalScreen() {
       <section className="space-y-6">
         <div className="rounded-3xl border border-amber-200/50 bg-gradient-to-br from-amber-50/90 via-white/70 to-orange-50/60 p-5 shadow-sm backdrop-blur-sm">
           <p className="font-serif text-sm italic leading-relaxed text-stone-600 sm:text-base">
-            Every path through the valley begins with a gentle story. Your
-            welcome quest is already underway — gather for Elena, explore each
-            region, and restore the sanctuary when you are ready.
+            {headerData.isNewPlayer
+              ? "Your story in Hearthvale has just begun. Elena is waiting for wildflowers — visit your stand, walk the meadow, and return with a bouquet."
+              : "Every path through the valley begins with a gentle story. Gather for neighbors, explore each landmark, and restore the sanctuary when you are ready."}
           </p>
-          <div className="mt-4 flex flex-wrap gap-3 text-xs text-stone-500">
-            <span className="rounded-full bg-white/70 px-3 py-1 ring-1 ring-stone-200/60">
-              {journalData.activeQuests.length} active
-            </span>
-            <span className="rounded-full bg-white/70 px-3 py-1 ring-1 ring-stone-200/60">
-              {journalData.completedQuests.length} completed
-            </span>
-            {journalData.hiddenQuestCount > 0 ? (
+          {!headerData.isNewPlayer ? (
+            <div className="mt-4 flex flex-wrap gap-3 text-xs text-stone-500">
               <span className="rounded-full bg-white/70 px-3 py-1 ring-1 ring-stone-200/60">
-                {journalData.hiddenQuestCount} undiscovered
+                {journalData.activeQuests.length} in progress
               </span>
-            ) : null}
-          </div>
+              <span className="rounded-full bg-white/70 px-3 py-1 ring-1 ring-stone-200/60">
+                {journalData.completedQuests.length} finished
+              </span>
+              {journalData.hiddenQuestCount > 0 ? (
+                <span className="rounded-full bg-white/70 px-3 py-1 ring-1 ring-stone-200/60">
+                  {journalData.hiddenQuestCount} yet undiscovered
+                </span>
+              ) : null}
+            </div>
+          ) : null}
         </div>
 
         {!hasAnyQuests ? (

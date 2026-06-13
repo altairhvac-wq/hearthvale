@@ -62,11 +62,11 @@ export function XpProgressBar({
   return (
     <div className={className}>
       <div className="mb-1 flex items-center justify-between text-[11px] text-stone-500">
-        <span>Experience</span>
+        <span>Heart of the valley</span>
         <span>
           {isMaxLevel
-            ? "Max level"
-            : `${currentXp.toLocaleString()} / ${requiredXp.toLocaleString()} XP`}
+            ? "Fully grown"
+            : `${currentXp.toLocaleString()} / ${requiredXp.toLocaleString()}`}
         </span>
       </div>
       <div

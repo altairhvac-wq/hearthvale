@@ -12,8 +12,8 @@ export function describeUnlockRequirement(
     case "quest_completed": {
       const quest = QUEST_DEFINITIONS.find((entry) => entry.id === requirement.questId);
       return quest
-        ? `Complete quest: ${quest.title}`
-        : "Complete a required quest";
+        ? `Finish the tale: ${quest.title}`
+        : "Finish a story the valley is waiting for";
     }
     case "restoration_completed":
       return "Complete a restoration project";
@@ -25,18 +25,18 @@ export function describeUnlockRequirement(
     case "region_state": {
       const regionLabel = getRegionDefinitionName(requirement.regionId);
       return requirement.state === "restored"
-        ? `Fully restore ${regionLabel}`
-        : `Unlock ${regionLabel}`;
+        ? `Bring ${regionLabel} back to life`
+        : `Find your way to ${regionLabel}`;
     }
     case "merchant_stage": {
       const stage = getMerchantStageDefinition(requirement.stageId);
       return stage
-        ? `Upgrade ${stage.title} to level ${requirement.minLevel}`
-        : "Upgrade your merchant business";
+        ? `Grow ${stage.title} to feel truly settled`
+        : "Tend your stand until the village notices";
     }
     case "prosperity_tier": {
       const tier = getProsperityTierByLevel(requirement.minTier);
-      return `Reach prosperity tier: ${tier.title}`;
+      return `Earn the valley's trust — reach ${tier.title}`;
     }
   }
 }

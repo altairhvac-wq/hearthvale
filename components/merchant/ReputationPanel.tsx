@@ -11,7 +11,7 @@ export function ReputationPanel({ reputation }: ReputationPanelProps) {
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-[11px] font-medium uppercase tracking-wide text-violet-600">
-            Reputation
+            Village trust
           </p>
           <h2 className="mt-0.5 text-lg font-semibold text-stone-800">
             {reputation.title}
@@ -19,7 +19,7 @@ export function ReputationPanel({ reputation }: ReputationPanelProps) {
           <p className="mt-1 text-sm text-stone-500">{reputation.description}</p>
         </div>
         <div className="rounded-xl bg-white/70 px-3 py-2 text-center shadow-sm">
-          <p className="text-[10px] uppercase tracking-wide text-stone-400">Level</p>
+          <p className="text-[10px] uppercase tracking-wide text-stone-400">Trust</p>
           <p className="text-xl font-bold text-violet-700">{reputation.level}</p>
         </div>
       </div>
@@ -30,8 +30,8 @@ export function ReputationPanel({ reputation }: ReputationPanelProps) {
           max={100}
           label={
             reputation.nextTitle
-              ? `Progress to ${reputation.nextTitle}`
-              : "Maximum reputation"
+              ? `Growing toward ${reputation.nextTitle}`
+              : "The whole valley trusts you"
           }
           fillClassName="bg-gradient-to-r from-violet-400 to-rose-400"
         />

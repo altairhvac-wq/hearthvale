@@ -43,7 +43,7 @@ export function GameShell({
               ) : null}
             </div>
           )}
-          <ResourceBar resources={resources} className="mb-3" />
+          <ResourceBar resources={resources} className="mb-3" hidden={isNewPlayer} />
           <PlayerLevelStrip
             levelInfo={levelInfo}
             displayName={displayName}

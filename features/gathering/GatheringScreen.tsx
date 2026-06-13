@@ -67,13 +67,17 @@ export function GatheringScreen() {
     setExpandedRegionId((current) => (current === regionId ? null : regionId));
   }, []);
 
+  const isNewPlayer = headerData?.isNewPlayer ?? false;
+
   const handleGather = useCallback(
     (nodeId: import("@/types").ResourceNodeId) => {
       const result = gatherFromNode(nodeId);
 
       if (result) {
         setActionMessage(
-          `Gathered ${result.yieldAmount} ${result.resourceName} (+${result.skillXp} XP)`,
+          isNewPlayer
+            ? `You picked ${result.yieldAmount} ${result.resourceName.toLowerCase()} — Elena will love these.`
+            : `Gathered ${result.yieldAmount} ${result.resourceName} (+${result.skillXp} XP)`,
         );
         refreshGatheringState();
         return;
@@ -81,7 +85,7 @@ export function GatheringScreen() {
 
       setActionMessage("Could not gather from this spot right now.");
     },
-    [gatherFromNode, refreshGatheringState],
+    [gatherFromNode, refreshGatheringState, isNewPlayer],
   );
 
   const handleTravelToRegion = useCallback(
@@ -103,27 +107,41 @@ export function GatheringScreen() {
       levelInfo={headerData.levelInfo}
       displayName={headerData.displayName}
       isNewPlayer={headerData.isNewPlayer}
-      title="Gather"
-      subtitle="Find materials for merchant requests and restoration"
+      title={isNewPlayer ? "The meadow" : "Gather"}
+      subtitle={
+        isNewPlayer
+          ? "Wildflowers bloom along the path — pick enough for Elena"
+          : "Walk the valley and find what neighbors need"
+      }
     >
       <div className="space-y-4">
         <div className="rounded-2xl border border-emerald-200/60 bg-emerald-50/70 px-4 py-3 text-sm text-emerald-900">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="font-medium">
-                {gatheringData.totalAvailableNodes} gathering spots ready
-              </p>
-              <p className="mt-1 text-xs text-emerald-800/80">
-                Gather materials here, then bring them to the Market Stand to
-                fulfill customer requests. Spots refresh when you leave and
-                return to this page.
-              </p>
+              {isNewPlayer ? (
+                <>
+                  <p className="font-medium">Wildflowers sway in the morning light</p>
+                  <p className="mt-1 text-xs text-emerald-800/80">
+                    Gather blooms here, then bring them back to your stand for Elena.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="font-medium">
+                    {gatheringData.totalAvailableNodes} spots ready to explore
+                  </p>
+                  <p className="mt-1 text-xs text-emerald-800/80">
+                    Gather materials here, then bring them to your stand to help
+                    neighbors. Spots refresh when you wander back.
+                  </p>
+                </>
+              )}
             </div>
             <Link
               href="/merchant"
               className="shrink-0 rounded-lg border border-emerald-200 bg-white/80 px-2.5 py-1 text-[11px] font-medium text-emerald-800 transition-colors hover:bg-white"
             >
-              Market Stand
+              Your stand
             </Link>
           </div>
         </div>

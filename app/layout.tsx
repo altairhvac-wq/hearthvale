@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Hearthvale",
   description:
-    "A cozy progression-based world restoration game — restore, discover, unlock, collect, personalize.",
+    "A cozy valley restoration game — trade at your stand, gather in the meadow, and help Hearthvale bloom again.",
 };
 
 export default function RootLayout({

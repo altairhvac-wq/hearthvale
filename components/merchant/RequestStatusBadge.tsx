@@ -7,11 +7,11 @@ interface RequestStatusBadgeProps {
 function labelForStatus(status: CustomerRequestStatus): string {
   switch (status) {
     case "locked":
-      return "Locked";
+      return "Soon";
     case "available":
-      return "Available";
+      return "Waiting";
     case "active":
-      return "Active";
+      return "Helping";
     case "completed":
       return "Done";
     default:

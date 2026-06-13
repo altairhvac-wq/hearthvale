@@ -158,20 +158,20 @@ export function buildQuestJournalData(
   const sections: QuestJournalSection[] = [
     {
       id: "active",
-      title: "Active Stories",
-      subtitle: "Quests you are currently pursuing",
+      title: "Stories you're living",
+      subtitle: "Tales unfolding as you walk the valley",
       quests: activeQuests,
     },
     {
       id: "available",
-      title: "Awaiting You",
-      subtitle: "New chapters ready to begin",
+      title: "Awaiting you",
+      subtitle: "New chapters ready when you are",
       quests: availableQuests,
     },
     {
       id: "completed",
-      title: "Completed Tales",
-      subtitle: "Stories you have finished",
+      title: "Finished tales",
+      subtitle: "Moments the valley will remember",
       quests: completedQuests,
     },
   ];

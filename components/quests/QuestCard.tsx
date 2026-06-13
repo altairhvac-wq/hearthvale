@@ -60,7 +60,7 @@ export function QuestCard({
         <ProgressBar
           className="mt-3"
           value={quest.progressPercent}
-          label="Quest progress"
+          label="Story progress"
           fillClassName="bg-gradient-to-r from-amber-400 to-orange-400"
         />
       ) : null}

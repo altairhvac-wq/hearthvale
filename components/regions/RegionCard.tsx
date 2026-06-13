@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { RegionViewModel } from "@/game/regions/view-model";
+import { REGION_ATMOSPHERE } from "@/game/constants/immersion";
 import { getRegionProgressPresentation } from "@/game/regions/presentation";
 import { getRegionProgressFill } from "@/components/theme/region-styles";
 import { LockIcon, RegionIcon } from "@/components/icons/GameIcons";
@@ -26,6 +27,10 @@ export function RegionCard({
   const theme = getRegionThemeStyle(region.theme);
   const isLocked = region.displayStatus === "locked";
   const progress = getRegionProgressPresentation(region.displayStatus);
+  const atmosphere = REGION_ATMOSPHERE[region.id];
+  const displayDescription = compact
+    ? atmosphere?.tagline ?? region.description
+    : region.description;
 
   const body = (
     <>
@@ -53,14 +58,22 @@ export function RegionCard({
             ) : null}
             {!region.isOnMap ? (
               <span className="rounded-full bg-stone-100 px-2 py-0.5 text-[10px] font-medium text-stone-500">
-                List only
+                Off map
               </span>
             ) : null}
           </div>
 
-          {!compact ? (
-            <p className="mt-1 text-xs leading-relaxed text-stone-600 sm:text-sm">
-              {region.description}
+          <p
+            className={`mt-1 leading-relaxed text-stone-600 ${
+              compact ? "text-xs italic" : "text-xs sm:text-sm"
+            }`}
+          >
+            {displayDescription}
+          </p>
+
+          {!compact && atmosphere ? (
+            <p className="mt-1 text-[10px] font-medium text-stone-400">
+              {atmosphere.moodLabel}
             </p>
           ) : null}
         </div>
@@ -78,7 +91,7 @@ export function RegionCard({
       {region.showUnlockRequirement ? (
         <div className="mt-3 rounded-xl border border-dashed border-stone-200/80 bg-stone-50/60 px-3 py-2">
           <p className="text-[10px] font-medium uppercase tracking-wide text-stone-400">
-            Unlock requirement
+            To reach this place
           </p>
           <p className="mt-0.5 text-xs text-stone-600">
             {region.unlockRequirementDescription}
