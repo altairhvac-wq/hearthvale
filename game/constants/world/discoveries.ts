@@ -1,10 +1,5 @@
-import { createId, type DiscoveryLocationDefinition } from "@/types";
-
-export const DISCOVERY_LOCATION_IDS = {
-  MYSTERIOUS_RUINS: createId<"DiscoveryLocationId">("mysterious_ruins"),
-  BEYOND_HARBOR: createId<"DiscoveryLocationId">("beyond_harbor"),
-  HIDDEN_GROVE: createId<"DiscoveryLocationId">("hidden_grove"),
-} as const;
+import { DISCOVERY_LOCATION_IDS } from "./ids";
+import { type DiscoveryLocationDefinition } from "@/types";
 
 /** Unknown places on the map — curiosity only, never unlocked in V1. */
 export const DISCOVERY_LOCATION_DEFINITIONS = [

@@ -1,14 +1,5 @@
-import { CHARACTER_IDS } from "./characters";
-import { createId, type DialogueDefinition } from "@/types";
-
-export const DIALOGUE_IDS = {
-  ELENA_REQUEST: createId<"DialogueId">("elena_request"),
-  ELENA_THANKS: createId<"DialogueId">("elena_thanks"),
-  ELENA_GREETING: createId<"DialogueId">("elena_greeting"),
-  FINN_TEASER: createId<"DialogueId">("finn_teaser"),
-  WILLOW_TEASER: createId<"DialogueId">("willow_teaser"),
-  CAPTAIN_ROWAN_TEASER: createId<"DialogueId">("captain_rowan_teaser"),
-} as const;
+import { CHARACTER_IDS, DIALOGUE_IDS } from "./ids";
+import { type DialogueDefinition } from "@/types";
 
 export const DIALOGUE_DEFINITIONS = [
   {

@@ -1,5 +1,5 @@
 import { CUSTOMER_REQUEST_IDS } from "@/game/constants/requests";
-import { CHARACTER_IDS, DIALOGUE_IDS } from "@/game/constants/world";
+import { CHARACTER_IDS, DIALOGUE_IDS } from "@/game/constants/world/ids";
 import type {
   CharacterDialogueViewModel,
   CharacterId,

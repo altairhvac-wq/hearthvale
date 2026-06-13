@@ -1,11 +1,13 @@
 import {
   CHARACTER_DEFINITIONS,
-  CHARACTER_IDS,
   DISCOVERY_LOCATION_DEFINITIONS,
-  DISCOVERY_LOCATION_IDS,
   LOCATION_DEFINITIONS,
-  LOCATION_IDS,
 } from "./world";
+import {
+  CHARACTER_IDS,
+  DISCOVERY_LOCATION_IDS,
+  LOCATION_IDS,
+} from "./world/ids";
 import { resolveCharacterDialogue } from "@/game/world/dialogue";
 import type { HomeObjectiveViewModel } from "@/game/onboarding/home-view-model";
 import type { RequestsState } from "@/types";

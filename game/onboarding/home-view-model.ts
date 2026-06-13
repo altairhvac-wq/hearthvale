@@ -11,7 +11,8 @@ import {
 import { QUEST_IDS } from "@/game/constants/quests";
 import { CUSTOMER_REQUEST_IDS, getCustomerRequestDefinition } from "@/game/constants/requests";
 import { MERCHANT_STAGE_IDS } from "@/game/constants/merchant";
-import { CHARACTER_DEFINITIONS, CHARACTER_IDS } from "@/game/constants/world";
+import { CHARACTER_DEFINITIONS } from "@/game/constants/world";
+import { CHARACTER_IDS } from "@/game/constants/world/ids";
 import { resolveCharacterDialogue } from "@/game/world/dialogue";
 import type { MerchantScreenData } from "@/game/merchant/view-model";
 import type { ProsperityViewModel } from "@/game/prosperity/view-model";

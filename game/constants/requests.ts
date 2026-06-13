@@ -2,7 +2,7 @@ import { RESOURCE_IDS } from "@/game/constants/resources";
 import { SKILL_IDS } from "@/game/constants/skills";
 import { ITEM_IDS } from "@/game/constants/items";
 import { MERCHANT_STAGE_IDS } from "@/game/constants/merchant";
-import { CHARACTER_IDS } from "@/game/constants/world";
+import { CHARACTER_IDS } from "@/game/constants/world/ids";
 import {
   createId,
   type CustomerRequestDefinition,

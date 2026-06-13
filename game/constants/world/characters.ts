@@ -1,14 +1,6 @@
 import { REGION_IDS } from "@/game/constants/regions";
-import { LOCATION_IDS } from "./locations";
-import { DIALOGUE_IDS } from "./dialogue";
+import { CHARACTER_IDS, DIALOGUE_IDS, LOCATION_IDS } from "./ids";
 import { createId, type CharacterDefinition } from "@/types";
-
-export const CHARACTER_IDS = {
-  ELENA: createId<"CharacterId">("elena"),
-  FINN: createId<"CharacterId">("finn"),
-  WILLOW: createId<"CharacterId">("willow"),
-  CAPTAIN_ROWAN: createId<"CharacterId">("captain_rowan"),
-} as const;
 
 export const CHARACTER_DEFINITIONS = [
   {

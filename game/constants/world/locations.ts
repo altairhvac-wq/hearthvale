@@ -1,12 +1,6 @@
 import { REGION_IDS } from "@/game/constants/regions";
-import { createId, type LocationDefinition } from "@/types";
-
-export const LOCATION_IDS = {
-  VILLAGE_SQUARE: createId<"LocationId">("village_square"),
-  FOREST_PATH: createId<"LocationId">("forest_path"),
-  ANIMAL_SANCTUARY: createId<"LocationId">("animal_sanctuary"),
-  HARBOR: createId<"LocationId">("harbor"),
-} as const;
+import { CHARACTER_IDS, LOCATION_IDS } from "./ids";
+import { type LocationDefinition } from "@/types";
 
 export type CoreLocationId = (typeof LOCATION_IDS)[keyof typeof LOCATION_IDS];
 
@@ -21,7 +15,7 @@ export const LOCATION_DEFINITIONS = [
       "Footsteps echo differently here now — but the cobblestones still remember festival days.",
     restorationDream:
       "One day the square may ring with voices again, stalls blooming like wildflowers after rain.",
-    characterIds: [createId<"CharacterId">("elena")],
+    characterIds: [CHARACTER_IDS.ELENA],
     regionId: REGION_IDS.VALLEY,
     sortOrder: 0,
   },
@@ -49,7 +43,7 @@ export const LOCATION_DEFINITIONS = [
       "Empty pens and overturned feeders tell of creatures who fled when the valley grew still.",
     restorationDream:
       "The sanctuary may bloom again with soft footsteps, warm nests, and a caretaker's steady hand.",
-    characterIds: [createId<"CharacterId">("willow")],
+    characterIds: [CHARACTER_IDS.WILLOW],
     regionId: REGION_IDS.SANCTUARY,
     sortOrder: 2,
   },
@@ -63,10 +57,7 @@ export const LOCATION_DEFINITIONS = [
       "Ropes hang loose on moorings that haven't held a boat in seasons. The horizon still beckons.",
     restorationDream:
       "Strong timbers and mended lines may one day welcome travelers from shores yet unseen.",
-    characterIds: [
-      createId<"CharacterId">("finn"),
-      createId<"CharacterId">("captain_rowan"),
-    ],
+    characterIds: [CHARACTER_IDS.FINN, CHARACTER_IDS.CAPTAIN_ROWAN],
     regionId: REGION_IDS.DOCK,
     sortOrder: 3,
   },
