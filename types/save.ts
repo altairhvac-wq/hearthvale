@@ -16,7 +16,7 @@ import type {
   VisitSession,
 } from "./valley";
 
-export const SAVE_VERSION = 5 as const;
+export const SAVE_VERSION = 6 as const;
 
 /** @deprecated v2 flat shape — migrated automatically to v3. */
 export interface LegacyGameSaveDataV2 {

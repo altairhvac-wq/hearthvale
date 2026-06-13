@@ -11,6 +11,7 @@ interface GameShellProps {
   resources: ResourceDisplayItem[];
   levelInfo: PlayerLevelInfo;
   displayName: string;
+  isNewPlayer?: boolean;
   title?: string;
   subtitle?: string;
 }
@@ -20,6 +21,7 @@ export function GameShell({
   resources,
   levelInfo,
   displayName,
+  isNewPlayer = false,
   title,
   subtitle,
 }: GameShellProps) {
@@ -42,7 +44,11 @@ export function GameShell({
             </div>
           )}
           <ResourceBar resources={resources} className="mb-3" />
-          <PlayerLevelStrip levelInfo={levelInfo} displayName={displayName} />
+          <PlayerLevelStrip
+            levelInfo={levelInfo}
+            displayName={displayName}
+            isNewPlayer={isNewPlayer}
+          />
         </div>
       </header>
 

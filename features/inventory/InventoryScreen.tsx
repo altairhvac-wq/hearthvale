@@ -22,6 +22,7 @@ export function InventoryScreen() {
       resources={headerData.resources}
       levelInfo={headerData.levelInfo}
       displayName={headerData.displayName}
+      isNewPlayer={headerData.isNewPlayer}
       title="Inventory"
       subtitle="Everything you've gathered and the tools you carry"
     >
@@ -40,16 +41,16 @@ export function InventoryScreen() {
           ) : null}
         </div>
 
-        {inventoryData.isEmpty ? (
+        {!inventoryData.hasGatheredResources ? (
           <EmptyState
             title="Nothing gathered yet"
-            description="Explore the valley, gather wildflowers, berries, and fish, then return here to see what you've collected."
+            description="Head to Gather to pick wildflowers and berries, then bring them to the Market Stand for Elena's request."
           />
-        ) : (
-          inventoryData.groups.map((group) => (
-            <InventoryCategorySection key={group.category} group={group} />
-          ))
-        )}
+        ) : null}
+
+        {inventoryData.groups.map((group) => (
+          <InventoryCategorySection key={group.category} group={group} />
+        ))}
 
         <section className="rounded-2xl border border-dashed border-stone-200/80 bg-white/50 px-4 py-3">
           <p className="text-xs leading-relaxed text-stone-500">

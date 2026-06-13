@@ -12,7 +12,7 @@ function statusLabel(status: GatherNodeViewModel["status"]): string {
     case "available":
       return "Ready";
     case "depleted":
-      return "Depleted";
+      return "Resting";
     case "respawning":
       return "Recovering";
   }
@@ -91,6 +91,10 @@ export function ResourceNodeCard({
 
       {node.blockMessage && !node.canGather ? (
         <p className="mb-3 text-[11px] text-amber-700">{node.blockMessage}</p>
+      ) : node.status === "depleted" ? (
+        <p className="mb-3 text-[11px] text-stone-500">
+          This spot rests for now — leave and return to Gather to find more.
+        </p>
       ) : null}
 
       <button

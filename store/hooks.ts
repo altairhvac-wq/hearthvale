@@ -3,6 +3,7 @@
 import { useMemo, useSyncExternalStore } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { computePlayerLevelInfo } from "@/game/player/level";
+import { isFirstSession } from "@/game/onboarding/first-session";
 import { getCoreResourceDisplay } from "@/game/player/resources";
 import { useGameStore, type GameStore } from "./game-store";
 
@@ -60,6 +61,7 @@ export function usePlayerHeaderData() {
       displayName: state.player.displayName,
       resources: state.player.resources,
       skills: state.skills,
+      quests: state.quests,
     })),
   );
 
@@ -68,10 +70,13 @@ export function usePlayerHeaderData() {
       return undefined;
     }
 
+    const levelInfo = computePlayerLevelInfo(headerSource.skills);
+
     return {
       displayName: headerSource.displayName,
       resources: getCoreResourceDisplay(headerSource.resources),
-      levelInfo: computePlayerLevelInfo(headerSource.skills),
+      levelInfo,
+      isNewPlayer: isFirstSession(headerSource.quests, levelInfo.totalXp),
     };
   }, [isHydrated, headerSource]);
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { autoStartWelcomeQuest } from "@/game/onboarding/first-session";
 import {
   flushScheduledPersist,
   subscribeToAutoSave,
@@ -27,6 +28,7 @@ export function GameProvider({ children }: GameProviderProps) {
     touchLastPlayed();
 
     const state = useGameStore.getState();
+    autoStartWelcomeQuest(state);
     state.refreshQuestAvailability();
     state.syncActiveQuestObjectives();
     state.refreshRestorationAvailability();

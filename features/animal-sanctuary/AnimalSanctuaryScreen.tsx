@@ -87,6 +87,7 @@ export function AnimalSanctuaryScreen() {
       resources={headerData.resources}
       levelInfo={headerData.levelInfo}
       displayName={headerData.displayName}
+      isNewPlayer={headerData.isNewPlayer}
       title="Animal Sanctuary"
       subtitle="Rescue gentle companions and nurture their trust"
     >
@@ -124,7 +125,7 @@ export function AnimalSanctuaryScreen() {
         {!hasAnyAnimals ? (
           <EmptyState
             title="The sanctuary is quiet"
-            description="Companions will find their way here as you explore and restore the valley."
+            description="Explore each region on the map and complete Meet The Valley in your Journal. A gentle rabbit named Clover will be ready to rescue soon after."
           />
         ) : (
           sanctuaryData.sections.map((section) => (

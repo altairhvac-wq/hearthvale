@@ -23,6 +23,7 @@ export interface InventoryScreenData {
   totalItemCount: number;
   resourceCount: number;
   toolCount: number;
+  hasGatheredResources: boolean;
   isEmpty: boolean;
 }
 
@@ -97,8 +98,9 @@ export function buildInventoryScreenData(
   return {
     groups,
     totalItemCount: items.reduce((total, item) => total + item.quantity, 0),
-    resourceCount,
-    toolCount,
-    isEmpty: items.length === 0,
-  };
+  resourceCount,
+  toolCount,
+  hasGatheredResources: resourceCount > 0,
+  isEmpty: items.length === 0,
+};
 }

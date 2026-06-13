@@ -1,4 +1,6 @@
 import { DEFAULT_USER_ID, DEFAULT_VALLEY_ID } from "@/game/constants/valley";
+import { FOUNDATION_EPOCH } from "@/game/constants/foundation";
+import { REGION_DEFINITIONS } from "@/game/constants/regions";
 import { createInitialMembershipsState } from "@/game/valley";
 import { createInitialMerchantState } from "@/game/merchant/state";
 import { createInitialProsperityState } from "@/game/prosperity/state";
@@ -55,6 +57,45 @@ function migrateValleysToV5(
     Object.entries(valleys).map(([valleyId, valley]) => [
       valleyId,
       migrateValleyToV5(migrateValleyToV4(valley)),
+    ]),
+  );
+}
+
+function migrateValleyToV6(valley: ValleySaveData): ValleySaveData {
+  const regions = { ...valley.regions };
+
+  for (const definition of REGION_DEFINITIONS) {
+    if (definition.unlockRequirement) {
+      continue;
+    }
+
+    const region = regions[definition.id];
+
+    if (!region || region.state !== "locked") {
+      continue;
+    }
+
+    regions[definition.id] = {
+      ...region,
+      state: "unlocked",
+      discoveryProgress: Math.max(region.discoveryProgress, 5),
+      unlockedAt: region.unlockedAt ?? FOUNDATION_EPOCH,
+    };
+  }
+
+  return {
+    ...valley,
+    regions,
+  };
+}
+
+function migrateValleysToV6(
+  valleys: Record<string, ValleySaveData>,
+): Record<string, ValleySaveData> {
+  return Object.fromEntries(
+    Object.entries(valleys).map(([valleyId, valley]) => [
+      valleyId,
+      migrateValleyToV6(valley),
     ]),
   );
 }
@@ -143,6 +184,19 @@ export const SAVE_MIGRATIONS: SaveMigration[] = [
         ...data,
         version: 5,
         valleys: migrateValleysToV5(valleys),
+      };
+    },
+  },
+  {
+    fromVersion: 5,
+    toVersion: 6,
+    migrate(data) {
+      const valleys = asKeyedRecord<ValleySaveData>(data.valleys);
+
+      return {
+        ...data,
+        version: 6,
+        valleys: migrateValleysToV6(valleys),
       };
     },
   },

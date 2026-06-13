@@ -119,9 +119,23 @@ export function MerchantScreen() {
       resources={headerData.resources}
       levelInfo={headerData.levelInfo}
       displayName={headerData.displayName}
+      isNewPlayer={headerData.isNewPlayer}
       title="Merchant"
     >
       <div className="space-y-5 pb-4">
+        {headerData.isNewPlayer && merchantData.availableRequests.length > 0 ? (
+          <div className="rounded-2xl border border-amber-200/70 bg-gradient-to-br from-amber-50/95 to-orange-50/60 px-4 py-3.5 shadow-sm">
+            <p className="text-sm font-semibold text-amber-950">
+              Start here
+            </p>
+            <p className="mt-1 text-xs leading-relaxed text-amber-900/85">
+              Your Market Stand is the heart of village trade. Accept a customer
+              request below, gather the needed goods, then return here to deliver
+              and earn coins.
+            </p>
+          </div>
+        ) : null}
+
         {actionMessage ? (
           <div
             className="rounded-2xl border border-emerald-200/70 bg-emerald-50/90 px-4 py-3 text-sm text-emerald-800 shadow-sm"
@@ -154,12 +168,17 @@ export function MerchantScreen() {
               <p className="mt-3 text-sm leading-relaxed text-stone-600">
                 {merchantData.activeStage.description}
               </p>
+              {headerData.isNewPlayer ? (
+                <p className="mt-2 text-xs text-amber-800/90">
+                  Upgrade your stand with coins earned from fulfilled requests.
+                </p>
+              ) : null}
             </div>
             <Link
-              href="/inventory"
+              href="/gather"
               className="shrink-0 rounded-xl border border-amber-200/70 bg-white/70 px-2.5 py-1.5 text-[11px] font-medium text-amber-900 transition-colors hover:bg-white"
             >
-              Your pack
+              Go gather
             </Link>
           </div>
         </header>
@@ -192,7 +211,7 @@ export function MerchantScreen() {
           ) : (
             <EmptyState
               title="No active requests"
-              description="Accept a customer request below to start earning coins and reputation."
+              description="Accept Elena's wildflower bouquet below, gather blooms in the meadow, then return to deliver."
             />
           )}
         </section>

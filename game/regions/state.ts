@@ -13,10 +13,10 @@ export function createInitialRegionsState(): Record<string, Region> {
 
     acc[definition.id] = {
       id: definition.id,
-      state: isStartingRegion ? "unlocked" : "locked",
-      discoveryProgress: isStartingRegion ? 10 : 0,
+      state: "unlocked",
+      discoveryProgress: isStartingRegion ? 10 : 5,
       restorationProgress: 0,
-      unlockedAt: isStartingRegion ? FOUNDATION_EPOCH : null,
+      unlockedAt: FOUNDATION_EPOCH,
       restoredAt: null,
     };
 

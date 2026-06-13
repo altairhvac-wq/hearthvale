@@ -102,8 +102,9 @@ export function GatheringScreen() {
       resources={headerData.resources}
       levelInfo={headerData.levelInfo}
       displayName={headerData.displayName}
+      isNewPlayer={headerData.isNewPlayer}
       title="Gather"
-      subtitle="Explore regions, find resources, and grow your skills"
+      subtitle="Find materials for merchant requests and restoration"
     >
       <div className="space-y-4">
         <div className="rounded-2xl border border-emerald-200/60 bg-emerald-50/70 px-4 py-3 text-sm text-emerald-900">
@@ -113,15 +114,16 @@ export function GatheringScreen() {
                 {gatheringData.totalAvailableNodes} gathering spots ready
               </p>
               <p className="mt-1 text-xs text-emerald-800/80">
-                Travel to a region, gather materials, and bring them back for
-                requests and restoration.
+                Gather materials here, then bring them to the Market Stand to
+                fulfill customer requests. Spots refresh when you leave and
+                return to this page.
               </p>
             </div>
             <Link
-              href="/inventory"
+              href="/merchant"
               className="shrink-0 rounded-lg border border-emerald-200 bg-white/80 px-2.5 py-1 text-[11px] font-medium text-emerald-800 transition-colors hover:bg-white"
             >
-              View pack
+              Market Stand
             </Link>
           </div>
         </div>

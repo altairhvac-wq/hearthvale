@@ -1,5 +1,9 @@
 import type { QuestId } from "@/types";
 import { buildQuestEvaluationContext } from "@/game/quests/context";
+import { QUEST_IDS } from "@/game/constants/quests";
+import {
+  autoStartPostWelcomeQuests,
+} from "@/game/onboarding/first-session";
 import {
   createQuestService,
 } from "@/game/quests/service";
@@ -89,6 +93,10 @@ export function createQuestsSlice(set: SetState, get: GetState): QuestsSlice {
 
       if (result) {
         get().refreshMiniGameAvailability();
+
+        if (questId === QUEST_IDS.WELCOME_TO_HEARTHVALE) {
+          autoStartPostWelcomeQuests(get());
+        }
       }
 
       return result;

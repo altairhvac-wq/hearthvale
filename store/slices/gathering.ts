@@ -1,4 +1,8 @@
 import type { ResourceNodeId } from "@/types";
+import {
+  trackGatherSuppliesProgress,
+  trackWelcomeProgress,
+} from "@/game/onboarding/first-session";
 import { buildGatheringEvaluationContext } from "@/game/gathering/context";
 import {
   createGatheringService,
@@ -58,7 +62,15 @@ export function createGatheringSlice(set: SetState, get: GetState): GatheringSli
     },
 
     gatherFromNode(nodeId) {
-      return gatheringService.gatherFromNode(nodeId);
+      const result = gatheringService.gatherFromNode(nodeId);
+
+      if (result) {
+        trackWelcomeProgress(get);
+        trackGatherSuppliesProgress(get);
+        get().syncActiveQuestObjectives();
+      }
+
+      return result;
     },
 
     getGatheringScreenData() {

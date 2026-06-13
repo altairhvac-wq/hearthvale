@@ -17,7 +17,8 @@ export const QUEST_DEFINITIONS = [
   {
     id: QUEST_IDS.WELCOME_TO_HEARTHVALE,
     title: "Welcome To Hearthvale",
-    description: "Begin your journey in the valley.",
+    description:
+      "Settle into the valley and help your Market Stand serve its first customer.",
     category: "story",
     visibility: "visible",
     regionId: REGION_IDS.VALLEY,
@@ -28,7 +29,7 @@ export const QUEST_DEFINITIONS = [
       {
         id: "begin_journey",
         kind: "manual",
-        description: "Take your first steps in the valley",
+        description: "Accept a request or gather your first materials",
         target: 1,
       },
     ],

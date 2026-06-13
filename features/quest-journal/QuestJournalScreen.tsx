@@ -47,15 +47,16 @@ export function QuestJournalScreen() {
       resources={headerData.resources}
       levelInfo={headerData.levelInfo}
       displayName={headerData.displayName}
+      isNewPlayer={headerData.isNewPlayer}
       title="Journal"
       subtitle="Stories guiding your journey through Hearthvale"
     >
       <section className="space-y-6">
         <div className="rounded-3xl border border-amber-200/50 bg-gradient-to-br from-amber-50/90 via-white/70 to-orange-50/60 p-5 shadow-sm backdrop-blur-sm">
           <p className="font-serif text-sm italic leading-relaxed text-stone-600 sm:text-base">
-            Every path through the valley begins with a gentle story. Track your
-            active quests, discover new chapters, and revisit the tales you have
-            already woven into the land.
+            Every path through the valley begins with a gentle story. Your
+            welcome quest is already underway — gather for Elena, explore each
+            region, and restore the sanctuary when you are ready.
           </p>
           <div className="mt-4 flex flex-wrap gap-3 text-xs text-stone-500">
             <span className="rounded-full bg-white/70 px-3 py-1 ring-1 ring-stone-200/60">

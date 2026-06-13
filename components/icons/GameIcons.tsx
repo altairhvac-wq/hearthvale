@@ -156,6 +156,27 @@ export function JournalIcon({ className = "h-5 w-5" }: IconProps) {
   );
 }
 
+export function GatherIcon({ className = "h-5 w-5" }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <path
+        d="M12 4c-2 3-5 5-7 5 1 2 3 3 5 2.5M12 4c2 3 5 5 7 5-1 2-3 3-5 2.5"
+        className="stroke-current"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 9v11M9 20h6"
+        className="stroke-current"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <circle cx="12" cy="4" r="1.5" className="fill-current opacity-70" />
+    </svg>
+  );
+}
+
 export function LockIcon({ className = "h-3.5 w-3.5" }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">

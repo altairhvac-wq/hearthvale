@@ -11,6 +11,10 @@ import {
 } from "@/game/requests/service";
 import { createReputationService } from "@/game/reputation/service";
 import { spendResourcesIfAffordable } from "@/game/player/resources";
+import { QUEST_IDS } from "@/game/constants/quests";
+import {
+  trackWelcomeProgress,
+} from "@/game/onboarding/first-session";
 import type {
   CustomerRequestId,
   MerchantStageId,
@@ -308,11 +312,24 @@ export function createMerchantSlice(set: SetState, get: GetState): MerchantSlice
     },
 
     activateCustomerRequest(requestId) {
-      return requestService.activateRequest(requestId);
+      const success = requestService.activateRequest(requestId);
+
+      if (success) {
+        trackWelcomeProgress(get);
+        get().syncActiveQuestObjectives();
+      }
+
+      return success;
     },
 
     completeCustomerRequest(requestId) {
-      return requestService.completeRequest(requestId);
+      const result = requestService.completeRequest(requestId);
+
+      if (result) {
+        trackWelcomeProgress(get);
+      }
+
+      return result;
     },
   };
 }

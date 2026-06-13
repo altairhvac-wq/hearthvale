@@ -114,7 +114,7 @@ export const RESOURCE_NODE_DEFINITIONS = [
     baseYield: 1,
     skillXp: 15,
     respawnRule: {
-      maxGathersPerCycle: 1,
+      maxGathersPerCycle: 3,
       respawnMode: "on_refresh",
     },
     sortOrder: 1,

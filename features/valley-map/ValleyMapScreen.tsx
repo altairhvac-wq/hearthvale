@@ -86,8 +86,9 @@ export function ValleyMapScreen() {
         resources={headerData.resources}
         levelInfo={headerData.levelInfo}
         displayName={headerData.displayName}
+        isNewPlayer={headerData.isNewPlayer}
         title="Hearthvale"
-        subtitle="A living valley awaits your gentle touch"
+        subtitle="A cozy valley waiting for your gentle touch"
       >
         <EmptyState
           title="The valley is quiet"
@@ -108,10 +109,40 @@ export function ValleyMapScreen() {
       resources={headerData.resources}
       levelInfo={headerData.levelInfo}
       displayName={headerData.displayName}
+      isNewPlayer={headerData.isNewPlayer}
       title="Hearthvale"
-      subtitle="A living valley awaits your gentle touch"
+      subtitle="A cozy valley waiting for your gentle touch"
     >
       <section className="space-y-5">
+        {headerData.isNewPlayer ? (
+          <div className="rounded-2xl border border-amber-200/70 bg-gradient-to-br from-amber-50/95 via-orange-50/60 to-rose-50/50 p-4 shadow-sm">
+            <p className="text-sm font-semibold text-amber-950">
+              Your first steps
+            </p>
+            <p className="mt-1.5 text-xs leading-relaxed text-amber-900/85">
+              Hearthvale is a gentle valley you help restore through trade,
+              gathering, and care. Start at your{" "}
+              <span className="font-medium">Market Stand</span> — accept
+              Elena&apos;s wildflower request, gather blooms in the meadow, then
+              deliver the bouquet.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Link
+                href="/merchant"
+                className="rounded-full bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-amber-700"
+              >
+                Visit Market Stand
+              </Link>
+              <Link
+                href="/gather"
+                className="rounded-full border border-amber-300/80 bg-white/80 px-3 py-1.5 text-xs font-medium text-amber-900 transition-colors hover:bg-white"
+              >
+                Go gather
+              </Link>
+            </div>
+          </div>
+        ) : null}
+
         {festivalCartData.isVisible && festivalCartData.featuredEvent ? (
           <ValleyEventBanner
             eventTitle={festivalCartData.featuredEvent.title}
@@ -134,7 +165,8 @@ export function ValleyMapScreen() {
               Explore & Gather
             </p>
             <p className="mt-0.5 text-xs text-emerald-800/75">
-              Find wildflowers, timber, fish, and stone across the valley
+              Gather wildflowers and berries for merchant requests and
+              restoration projects
             </p>
           </div>
           <span className="shrink-0 rounded-full bg-emerald-600 px-3 py-1 text-xs font-semibold text-white">

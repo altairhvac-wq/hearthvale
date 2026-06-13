@@ -4,12 +4,14 @@ import { XpProgressBar } from "@/components/ui/ProgressBar";
 interface PlayerLevelStripProps {
   levelInfo: PlayerLevelInfo;
   displayName: string;
+  isNewPlayer?: boolean;
   className?: string;
 }
 
 export function PlayerLevelStrip({
   levelInfo,
   displayName,
+  isNewPlayer = false,
   className = "",
 }: PlayerLevelStripProps) {
   return (
@@ -18,7 +20,9 @@ export function PlayerLevelStrip({
     >
       <div className="mb-2 flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate text-xs text-stone-500">Welcome back</p>
+          <p className="truncate text-xs text-stone-500">
+            {isNewPlayer ? "Welcome to Hearthvale" : "Welcome back"}
+          </p>
           <p className="truncate text-sm font-semibold text-stone-800">
             {displayName}
           </p>
