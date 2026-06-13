@@ -18,6 +18,7 @@ import type { MerchantScreenData } from "@/game/merchant/view-model";
 import type { ProsperityViewModel } from "@/game/prosperity/view-model";
 import type { CharacterId, Quest, RequestsState } from "@/types";
 import { isFirstSession, isWelcomeQuestComplete } from "./first-session";
+import { WORLD_HOTSPOT_LABELS } from "@/game/constants/world/labels";
 
 export interface HomeObjectiveViewModel {
   title: string;
@@ -59,8 +60,14 @@ function buildObjectiveForFirstSession(): HomeObjectiveViewModel {
     title: FIRST_SESSION_OBJECTIVE.title,
     description: FIRST_SESSION_OBJECTIVE.description,
     steps: FIRST_SESSION_OBJECTIVE.steps,
-    primaryAction: { label: "Visit Market Stand", href: "/merchant" },
-    secondaryAction: { label: "Walk the meadow", href: "/gather" },
+    primaryAction: {
+      label: WORLD_HOTSPOT_LABELS.visitMarketStand,
+      href: "/merchant",
+    },
+    secondaryAction: {
+      label: WORLD_HOTSPOT_LABELS.gatherWildflowers,
+      href: "/gather",
+    },
     isHighlighted: true,
   };
 }

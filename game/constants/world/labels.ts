@@ -52,3 +52,22 @@ export const REGION_STATUS_LABELS = {
   in_progress: "Needs care",
   restored: "Thriving",
 } as const;
+
+export const WORLD_HOTSPOT_LABELS = {
+  sceneEyebrow: "Hearthvale",
+  sceneTitle: "The village at dawn",
+  firstSessionSceneTitle: "Your valley awaits",
+  tapToExplore: "Tap a place to learn more",
+  mysterySubtitle: "Not yet within reach",
+  mysteryAtmosphere: "Something waits beyond the mist — patience will reveal it.",
+  unknownPlace: "Unknown place",
+  marketStandSubtitle: "At the edge of the square",
+  visitMarketStand: "Visit Market Stand",
+  visitStand: "Visit stand",
+  gatherWildflowers: "Gather wildflowers",
+  walkMeadow: "Walk the meadow",
+  explorePath: "Explore the path",
+  visitSanctuary: "Visit sanctuary",
+  youAreHere: "You are here",
+  distantSilhouette: "Distant silhouette",
+} as const;
