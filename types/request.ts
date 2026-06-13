@@ -17,12 +17,15 @@ export type CustomerRequestStatus =
   | "active"
   | "completed";
 
-/** Placeholder resource reference until inventory integration ships. */
+/** Stable placeholder key for legacy saves and catalog authoring. */
+export type RequestPlaceholderId = string;
+
+/** Inventory-backed requirement for customer requests. */
 export interface RequestResourceRequirement {
-  placeholderId: string;
+  placeholderId: RequestPlaceholderId;
   label: string;
   amount: number;
-  /** When set, inventory fulfillment can resolve this requirement by item id. */
+  /** Primary resolution path for inventory fulfillment. */
   itemId?: ItemId;
 }
 

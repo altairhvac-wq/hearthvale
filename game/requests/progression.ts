@@ -9,7 +9,7 @@ import type {
   CustomerRequestStatus,
 } from "@/types";
 import type { RequestEvaluationContext } from "./context";
-import { canFulfillRequestResources } from "./fulfillment";
+import { canFulfillRequestResourcesFromInventory } from "./inventory-fulfillment";
 
 export function canUnlockCustomerRequest(
   definition: CustomerRequestDefinition,
@@ -74,7 +74,10 @@ export function canCompleteCustomerRequest(
     return false;
   }
 
-  return canFulfillRequestResources(definition.requiredResources);
+  return canFulfillRequestResourcesFromInventory(
+    context.inventory,
+    definition.requiredResources,
+  );
 }
 
 export function countActiveRequests(

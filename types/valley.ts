@@ -2,7 +2,6 @@ import type { Animal, AnimalSpeciesId, AnimalSpeciesProgress } from "./animal";
 import type { Decoration } from "./decoration";
 import type { EventsState } from "./event";
 import type { GameUserId, RegionId, ValleyId, ValleyInviteId, VisitSessionId } from "./ids";
-import type { InventoryItem } from "./inventory";
 import type { MiniGame } from "./minigame";
 import type { Quest } from "./quest";
 import type { Region } from "./region";

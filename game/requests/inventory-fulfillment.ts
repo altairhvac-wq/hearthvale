@@ -1,5 +1,8 @@
 import { ITEM_IDS } from "@/game/constants/items";
-import { REQUEST_PLACEHOLDER_RESOURCES } from "@/game/constants/requests";
+import {
+  REQUEST_PLACEHOLDER_RESOURCES,
+  type RequestPlaceholderResourceId,
+} from "@/game/constants/requests";
 import {
   getInventoryItemQuantity,
   hasInventoryItems,
@@ -8,8 +11,11 @@ import {
 } from "@/game/inventory/service";
 import type { InventoryItem, ItemId, RequestResourceRequirement } from "@/types";
 
-/** Maps placeholder ids to inventory item ids for future fulfillment wiring. */
-export const REQUEST_PLACEHOLDER_ITEM_MAP: Record<string, ItemId> = {
+/** Maps legacy placeholder ids to inventory item ids when itemId is omitted. */
+export const REQUEST_PLACEHOLDER_ITEM_MAP: Record<
+  RequestPlaceholderResourceId,
+  ItemId
+> = {
   [REQUEST_PLACEHOLDER_RESOURCES.WILDFLOWERS]: ITEM_IDS.WILDFLOWERS,
   [REQUEST_PLACEHOLDER_RESOURCES.BERRIES]: ITEM_IDS.BERRIES,
   [REQUEST_PLACEHOLDER_RESOURCES.FISH]: ITEM_IDS.RIVER_FISH,
@@ -22,13 +28,22 @@ export function resolveRequestItemId(
     return requirement.itemId;
   }
 
-  return REQUEST_PLACEHOLDER_ITEM_MAP[requirement.placeholderId] ?? null;
+  const placeholderId =
+    requirement.placeholderId as RequestPlaceholderResourceId;
+
+  return REQUEST_PLACEHOLDER_ITEM_MAP[placeholderId] ?? null;
+}
+
+export function isRequestRequirementResolvable(
+  requirement: RequestResourceRequirement,
+): boolean {
+  return resolveRequestItemId(requirement) !== null;
 }
 
 export function toInventorySpendRequirements(
   requiredResources: ReadonlyArray<RequestResourceRequirement>,
 ): InventorySpendRequirement[] {
-  const requirements: InventorySpendRequirement[] = [];
+  const totals = new Map<ItemId, number>();
 
   for (const resource of requiredResources) {
     const itemId = resolveRequestItemId(resource);
@@ -37,45 +52,60 @@ export function toInventorySpendRequirements(
       continue;
     }
 
-    requirements.push({
-      itemId,
-      amount: resource.amount,
-    });
+    totals.set(itemId, (totals.get(itemId) ?? 0) + resource.amount);
   }
 
-  return requirements;
+  return [...totals.entries()].map(([itemId, amount]) => ({
+    itemId,
+    amount,
+  }));
 }
 
 /**
- * Inventory-backed fulfillment check.
- * Not wired into V1 request completion — use when replacing placeholders.
+ * Inventory-backed fulfillment check used by request completion.
  */
 export function canFulfillRequestResourcesFromInventory(
   inventory: ReadonlyArray<InventoryItem>,
   requiredResources: ReadonlyArray<RequestResourceRequirement>,
 ): boolean {
-  const requirements = toInventorySpendRequirements(requiredResources);
-
-  if (requirements.length === 0) {
+  if (requiredResources.length === 0) {
     return false;
   }
+
+  if (
+    !requiredResources.every((resource) =>
+      isRequestRequirementResolvable(resource),
+    )
+  ) {
+    return false;
+  }
+
+  const requirements = toInventorySpendRequirements(requiredResources);
 
   return hasInventoryItems(inventory, requirements);
 }
 
 /**
  * Spend gathered resources for request fulfillment.
- * Returns null when inventory lacks required stock.
+ * Returns null when inventory lacks required stock or requirements are unmapped.
  */
 export function spendRequestResourcesFromInventory(
   inventory: ReadonlyArray<InventoryItem>,
   requiredResources: ReadonlyArray<RequestResourceRequirement>,
 ): InventoryItem[] | null {
-  const requirements = toInventorySpendRequirements(requiredResources);
-
-  if (requirements.length === 0) {
+  if (requiredResources.length === 0) {
     return null;
   }
+
+  if (
+    !requiredResources.every((resource) =>
+      isRequestRequirementResolvable(resource),
+    )
+  ) {
+    return null;
+  }
+
+  const requirements = toInventorySpendRequirements(requiredResources);
 
   return spendInventoryItems(inventory, requirements);
 }

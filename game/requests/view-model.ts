@@ -11,10 +11,24 @@ import type {
 } from "@/types";
 import type { RequestEvaluationContext } from "./context";
 import {
+  getRequestResourceStock,
+  isRequestRequirementResolvable,
+} from "./inventory-fulfillment";
+import {
   canActivateCustomerRequest,
   canCompleteCustomerRequest,
   resolveCustomerRequestStatus,
 } from "./progression";
+
+export interface RequestResourceViewModel {
+  placeholderId: string;
+  label: string;
+  amount: number;
+  owned: number;
+  missing: number;
+  sufficient: boolean;
+  resolved: boolean;
+}
 
 export interface CustomerRequestViewModel {
   id: CustomerRequestId;
@@ -24,10 +38,40 @@ export interface CustomerRequestViewModel {
   customerName: string;
   status: CustomerRequestStatus;
   unlockDescription: string | null;
-  requiredResources: Array<{ label: string; amount: number }>;
+  requiredResources: RequestResourceViewModel[];
   rewardDescriptions: string[];
   canActivate: boolean;
   canComplete: boolean;
+  hasMissingItems: boolean;
+  completionBlockedReason: string | null;
+}
+
+function buildCompletionBlockedReason(
+  requiredResources: RequestResourceViewModel[],
+): string | null {
+  const unmapped = requiredResources.filter((resource) => !resource.resolved);
+
+  if (unmapped.length > 0) {
+    return "This request is not ready for fulfillment yet.";
+  }
+
+  const missing = requiredResources.filter((resource) => resource.missing > 0);
+
+  if (missing.length === 0) {
+    return null;
+  }
+
+  if (missing.length === 1) {
+    const resource = missing[0]!;
+
+    return resource.missing === 1
+      ? `Need 1 more ${resource.label}`
+      : `Need ${resource.missing} more ${resource.label}`;
+  }
+
+  return `Need more: ${missing
+    .map((resource) => `${resource.missing}× ${resource.label}`)
+    .join(", ")}`;
 }
 
 function buildRequestViewModel(
@@ -47,6 +91,25 @@ function buildRequestViewModel(
   }
 
   const status = resolveCustomerRequestStatus(definition, instance, context);
+  const requiredResources = definition.requiredResources.map((resource) => {
+    const resolved = isRequestRequirementResolvable(resource);
+    const owned = resolved
+      ? getRequestResourceStock(context.inventory, resource)
+      : 0;
+    const missing = resolved ? Math.max(0, resource.amount - owned) : resource.amount;
+
+    return {
+      placeholderId: resource.placeholderId,
+      label: resource.label,
+      amount: resource.amount,
+      owned,
+      missing,
+      sufficient: resolved && owned >= resource.amount,
+      resolved,
+    };
+  });
+  const hasMissingItems = requiredResources.some((resource) => !resource.sufficient);
+  const canComplete = canCompleteCustomerRequest(definition.id, context);
 
   return {
     id: definition.id,
@@ -58,13 +121,14 @@ function buildRequestViewModel(
     unlockDescription: definition.unlockRequirement
       ? describeUnlockRequirement(definition.unlockRequirement)
       : null,
-    requiredResources: definition.requiredResources.map((resource) => ({
-      label: resource.label,
-      amount: resource.amount,
-    })),
+    requiredResources,
     rewardDescriptions: definition.rewards.map(describeGameReward),
     canActivate: canActivateCustomerRequest(definition.id, context),
-    canComplete: canCompleteCustomerRequest(definition.id, context),
+    canComplete,
+    hasMissingItems,
+    completionBlockedReason: canComplete
+      ? null
+      : buildCompletionBlockedReason(requiredResources),
   };
 }
 

@@ -3,9 +3,10 @@ import {
   getCustomerRequestDefinition,
   isRegisteredCustomerRequest,
 } from "@/game/constants/requests";
-import { applyGameRewards, type GameRewardCallbacks } from "@/game/rewards";
+import { type GameRewardCallbacks } from "@/game/rewards";
 import type {
   CustomerRequestId,
+  RequestResourceRequirement,
   RequestsState,
 } from "@/types";
 import type { RequestEvaluationContext } from "./context";
@@ -15,6 +16,7 @@ import {
   hasActiveRequestCapacity,
   resolveCustomerRequestStatus,
 } from "./progression";
+import { applyRequestRewards } from "./rewards";
 
 export interface RequestCompletionResult {
   requestId: CustomerRequestId;
@@ -23,6 +25,10 @@ export interface RequestCompletionResult {
 
 export interface RequestServiceCallbacks extends GameRewardCallbacks {
   onRequestsChanged: () => void;
+  commitRequestFulfillment: (
+    requestId: CustomerRequestId,
+    requiredResources: ReadonlyArray<RequestResourceRequirement>,
+  ) => boolean;
 }
 
 export interface RequestService {
@@ -126,29 +132,16 @@ export function createRequestService(
         return null;
       }
 
-      const now = new Date().toISOString();
-      let completed = false;
-
-      writeRequest(requestId, (current) => {
-        if (current.status !== "active") {
-          return current;
-        }
-
-        completed = true;
-
-        return {
-          ...current,
-          status: "completed",
-          completedAt: now,
-          completionCount: current.completionCount + 1,
-        };
-      });
-
-      if (!completed) {
+      if (
+        !callbacks.commitRequestFulfillment(
+          requestId,
+          definition.requiredResources,
+        )
+      ) {
         return null;
       }
 
-      applyGameRewards(definition.rewards, callbacks);
+      applyRequestRewards(definition.rewards, callbacks);
       callbacks.onRequestsChanged();
 
       return {

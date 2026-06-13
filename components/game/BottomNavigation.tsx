@@ -4,12 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   AnimalIcon,
+  InventoryIcon,
   JournalIcon,
   MapIcon,
   MerchantIcon,
 } from "@/components/icons/GameIcons";
 
-export type NavTab = "map" | "animals" | "merchant" | "journal";
+export type NavTab = "map" | "animals" | "merchant" | "inventory" | "journal";
 
 interface NavItem {
   id: NavTab;
@@ -22,6 +23,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: "map", label: "Map", href: "/", icon: MapIcon },
   { id: "animals", label: "Animals", href: "/animals", icon: AnimalIcon },
   { id: "merchant", label: "Merchant", href: "/merchant", icon: MerchantIcon },
+  { id: "inventory", label: "Pack", href: "/inventory", icon: InventoryIcon },
   { id: "journal", label: "Journal", href: "/journal", icon: JournalIcon },
 ];
 

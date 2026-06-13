@@ -1,4 +1,5 @@
 import type {
+  InventoryItem,
   MerchantState,
   ProsperityState,
   Quest,
@@ -19,6 +20,7 @@ export interface RequestEvaluationContext {
   prosperity: ProsperityState;
   reputation: ReputationState;
   requests: RequestsState;
+  inventory: ReadonlyArray<InventoryItem>;
   getSkillLevel: (skillId: SkillId) => number;
   getProsperityTier: () => number;
 }
@@ -32,6 +34,7 @@ export function buildRequestContextFromGameState(state: {
   prosperity: ProsperityState;
   reputation: ReputationState;
   requests: RequestsState;
+  inventory: ReadonlyArray<InventoryItem>;
   getSkillLevel: (skillId: SkillId) => number;
   getProsperityTier: () => number;
 }): RequestEvaluationContext {
@@ -44,6 +47,7 @@ export function buildRequestContextFromGameState(state: {
     prosperity: state.prosperity,
     reputation: state.reputation,
     requests: state.requests,
+    inventory: state.inventory,
     getSkillLevel: state.getSkillLevel,
     getProsperityTier: state.getProsperityTier,
   };

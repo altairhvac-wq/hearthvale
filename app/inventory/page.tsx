@@ -1,10 +1,5 @@
-import { ComingSoonScreen } from "@/features/coming-soon";
+import { InventoryScreen } from "@/features/inventory";
 
 export default function InventoryPage() {
-  return (
-    <ComingSoonScreen
-      title="Inventory"
-      description="Collected treasures and foraged finds will live here. The valley still has secrets waiting to be discovered."
-    />
-  );
+  return <InventoryScreen />;
 }

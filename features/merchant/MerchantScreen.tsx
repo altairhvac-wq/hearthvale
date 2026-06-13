@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import type { CustomerRequestId, MerchantStageId } from "@/types";
 import { GameShell } from "@/components/game/GameShell";
@@ -101,7 +102,10 @@ export function MerchantScreen() {
       const result = completeCustomerRequest(requestId);
       if (result) {
         setActionMessage(`Delivered: ${result.title}`);
+        return;
       }
+
+      setActionMessage("You don't have enough items to fulfill this request.");
     },
     [completeCustomerRequest],
   );
@@ -128,26 +132,36 @@ export function MerchantScreen() {
         ) : null}
 
         <header className="rounded-2xl border border-amber-200/50 bg-gradient-to-br from-amber-50/90 via-orange-50/50 to-rose-50/40 p-5 shadow-sm">
-          <p className="text-[11px] font-medium uppercase tracking-wide text-amber-700">
-            Your business
-          </p>
-          <div className="mt-2 flex items-center gap-3">
-            <span className="text-4xl" aria-hidden="true">
-              {merchantData.activeStage.iconEmoji}
-            </span>
-            <div>
-              <h1 className="text-xl font-bold text-stone-800">
-                {merchantData.activeStage.title}
-              </h1>
-              <p className="text-sm text-stone-500">
-                Level {merchantData.activeStage.level} ·{" "}
-                {merchantData.activeStage.visualLabel}
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-[11px] font-medium uppercase tracking-wide text-amber-700">
+                Your business
+              </p>
+              <div className="mt-2 flex items-center gap-3">
+                <span className="text-4xl" aria-hidden="true">
+                  {merchantData.activeStage.iconEmoji}
+                </span>
+                <div>
+                  <h1 className="text-xl font-bold text-stone-800">
+                    {merchantData.activeStage.title}
+                  </h1>
+                  <p className="text-sm text-stone-500">
+                    Level {merchantData.activeStage.level} ·{" "}
+                    {merchantData.activeStage.visualLabel}
+                  </p>
+                </div>
+              </div>
+              <p className="mt-3 text-sm leading-relaxed text-stone-600">
+                {merchantData.activeStage.description}
               </p>
             </div>
+            <Link
+              href="/inventory"
+              className="shrink-0 rounded-xl border border-amber-200/70 bg-white/70 px-2.5 py-1.5 text-[11px] font-medium text-amber-900 transition-colors hover:bg-white"
+            >
+              Your pack
+            </Link>
           </div>
-          <p className="mt-3 text-sm leading-relaxed text-stone-600">
-            {merchantData.activeStage.description}
-          </p>
         </header>
 
         <ProsperityPanel

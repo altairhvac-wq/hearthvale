@@ -71,7 +71,7 @@ export function isPersistedInventoryItem(
     !isRarity(value.rarity) ||
     typeof value.quantity !== "number" ||
     !Number.isFinite(value.quantity) ||
-    value.quantity < 0 ||
+    value.quantity < 1 ||
     typeof value.stackLimit !== "number" ||
     !Number.isFinite(value.stackLimit) ||
     value.stackLimit < 1 ||
@@ -82,6 +82,7 @@ export function isPersistedInventoryItem(
 
   if (value.category === "tool") {
     return (
+      value.quantity === 1 &&
       typeof value.metadata.toolTypeId === "string" &&
       typeof value.metadata.tier === "number" &&
       Number.isFinite(value.metadata.tier) &&
@@ -89,7 +90,7 @@ export function isPersistedInventoryItem(
     );
   }
 
-  return true;
+  return value.quantity <= value.stackLimit;
 }
 
 export function isPersistedInventory(

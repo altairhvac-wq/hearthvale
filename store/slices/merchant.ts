@@ -4,6 +4,7 @@ import { calculateProsperityScore } from "@/game/prosperity/calculate";
 import { createProsperityService } from "@/game/prosperity/service";
 import { getProsperityTierLevel } from "@/game/prosperity/state";
 import { buildRequestContextFromGameState } from "@/game/requests/context";
+import { spendRequestResourcesFromInventory } from "@/game/requests/inventory-fulfillment";
 import {
   createRequestService,
   type RequestCompletionResult,
@@ -15,6 +16,7 @@ import type {
   MerchantStageId,
   ProsperityState,
   ReputationState,
+  RequestResourceRequirement,
   RestorationResourceRequirement,
 } from "@/types";
 import type { GameStore } from "../game-store";
@@ -101,6 +103,7 @@ export function createMerchantSlice(set: SetState, get: GetState): MerchantSlice
       prosperity: state.prosperity,
       reputation: state.reputation,
       requests: state.requests,
+      inventory: state.inventory,
       player: state.player,
       getSkillLevel: state.getSkillLevel,
       getProsperityScore,
@@ -120,9 +123,55 @@ export function createMerchantSlice(set: SetState, get: GetState): MerchantSlice
       prosperity: state.prosperity,
       reputation: state.reputation,
       requests: state.requests,
+      inventory: state.inventory,
       getSkillLevel: state.getSkillLevel,
       getProsperityTier,
     });
+  }
+
+  function commitRequestFulfillment(
+    requestId: CustomerRequestId,
+    requiredResources: ReadonlyArray<RequestResourceRequirement>,
+  ): boolean {
+    let committed = false;
+
+    set((state) => {
+      const current = state.requests.instances[requestId];
+
+      if (!current || current.status !== "active") {
+        return state;
+      }
+
+      const nextInventory = spendRequestResourcesFromInventory(
+        state.inventory,
+        requiredResources,
+      );
+
+      if (!nextInventory) {
+        return state;
+      }
+
+      committed = true;
+      const now = new Date().toISOString();
+
+      return {
+        inventory: nextInventory,
+        requests: {
+          ...state.requests,
+          instances: {
+            ...state.requests.instances,
+            [requestId]: {
+              ...current,
+              status: "completed",
+              completedAt: now,
+              completionCount: current.completionCount + 1,
+            },
+          },
+        },
+      };
+    });
+
+    return committed;
   }
 
   function refreshMerchantSystems(): void {
@@ -224,6 +273,7 @@ export function createMerchantSlice(set: SetState, get: GetState): MerchantSlice
     {
       ...rewardCallbacks,
       onRequestsChanged: refreshMerchantSystems,
+      commitRequestFulfillment,
     },
   );
 

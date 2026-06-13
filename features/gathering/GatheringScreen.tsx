@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { RegionId } from "@/types";
 import { GameShell } from "@/components/game/GameShell";
@@ -106,13 +107,23 @@ export function GatheringScreen() {
     >
       <div className="space-y-4">
         <div className="rounded-2xl border border-emerald-200/60 bg-emerald-50/70 px-4 py-3 text-sm text-emerald-900">
-          <p className="font-medium">
-            {gatheringData.totalAvailableNodes} gathering spots ready
-          </p>
-          <p className="mt-1 text-xs text-emerald-800/80">
-            Travel to a region, gather materials, and bring them back for
-            requests and restoration.
-          </p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="font-medium">
+                {gatheringData.totalAvailableNodes} gathering spots ready
+              </p>
+              <p className="mt-1 text-xs text-emerald-800/80">
+                Travel to a region, gather materials, and bring them back for
+                requests and restoration.
+              </p>
+            </div>
+            <Link
+              href="/inventory"
+              className="shrink-0 rounded-lg border border-emerald-200 bg-white/80 px-2.5 py-1 text-[11px] font-medium text-emerald-800 transition-colors hover:bg-white"
+            >
+              View pack
+            </Link>
+          </div>
         </div>
 
         {actionMessage ? (

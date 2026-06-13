@@ -20,6 +20,9 @@ export const REQUEST_PLACEHOLDER_RESOURCES = {
   FISH: "placeholder_fish",
 } as const;
 
+export type RequestPlaceholderResourceId =
+  (typeof REQUEST_PLACEHOLDER_RESOURCES)[keyof typeof REQUEST_PLACEHOLDER_RESOURCES];
+
 export const CUSTOMER_REQUEST_DEFINITIONS = [
   {
     id: CUSTOMER_REQUEST_IDS.WILDFLOWERS,

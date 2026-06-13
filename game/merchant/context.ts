@@ -1,5 +1,6 @@
 import type {
   Animal,
+  InventoryItem,
   MerchantState,
   PlayerResources,
   ProsperityState,
@@ -22,6 +23,7 @@ export interface MerchantEvaluationContext {
   prosperity: ProsperityState;
   reputation: ReputationState;
   requests: RequestsState;
+  inventory: ReadonlyArray<InventoryItem>;
   playerResources: PlayerResources;
   getSkillLevel: (skillId: SkillId) => number;
   getProsperityScore: () => number;
@@ -38,6 +40,7 @@ export function buildMerchantContextFromGameState(state: {
   prosperity: ProsperityState;
   reputation: ReputationState;
   requests: RequestsState;
+  inventory: ReadonlyArray<InventoryItem>;
   player: { resources: PlayerResources };
   getSkillLevel: (skillId: SkillId) => number;
   getProsperityScore: () => number;
@@ -53,6 +56,7 @@ export function buildMerchantContextFromGameState(state: {
     prosperity: state.prosperity,
     reputation: state.reputation,
     requests: state.requests,
+    inventory: state.inventory,
     playerResources: state.player.resources,
     getSkillLevel: state.getSkillLevel,
     getProsperityScore: state.getProsperityScore,

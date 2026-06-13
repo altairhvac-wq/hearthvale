@@ -19,6 +19,7 @@ export function useMerchantData() {
       prosperity: state.prosperity,
       reputation: state.reputation,
       requests: state.requests,
+      inventory: state.inventory,
       player: state.player,
       getSkillLevel: state.getSkillLevel,
       getProsperityScore: state.getProsperityScore,

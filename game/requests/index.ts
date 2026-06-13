@@ -1,4 +1,3 @@
-export * from "./fulfillment";
 export * from "./inventory-fulfillment";
 export * from "./state";
 export * from "./context";
